@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mcp-tools
+  namespace: ai-agent
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: mcp-basic-auth
+    nginx.ingress.kubernetes.io/auth-realm: "MCP tools - authentication required"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: ["mcp.20-19-153-146.nip.io"]
+      secretName: mcp-tools-tls
+  rules:
+    - host: "mcp.20-19-153-146.nip.io"
+      http:
+        paths:
+          - path: /k8s(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend: { service: { name: k8s-mcp-server, port: { number: 80 } } }
+          - path: /prometheus(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend: { service: { name: prometheus-mcp-server, port: { number: 80 } } }
+          - path: /pushgateway(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend: { service: { name: pushgateway, port: { number: 9091 } } }

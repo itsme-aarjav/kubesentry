@@ -1,0 +1,82 @@
+# Enforce Prometheus, Grafana, and Alertmanager to schedule ONLY on the
+# "monitoring" node pool (taint workload=observability), not on the
+# "system" pool that hosts the application workloads.
+prometheus:
+  prometheusSpec:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    nodeSelector:
+      workload: observability
+    tolerations:
+      - key: workload
+        operator: Equal
+        value: observability
+        effect: NoSchedule
+
+grafana:
+  grafanaSpec:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 200Mi
+  nodeSelector:
+    workload: observability
+  tolerations:
+    - key: workload
+      operator: Equal
+      value: observability
+      effect: NoSchedule
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: "1"
+
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector:
+      workload: observability
+    tolerations:
+      - key: workload
+        operator: Equal
+        value: observability
+        effect: NoSchedule
+
+kubeStateMetrics:
+  kubeStateMetricsSpec:
+    resources:
+      requests:
+        cpu: 25m
+        memory: 100Mi
+  nodeSelector:
+      workload: observability
+  tolerations:
+    - key: workload
+      operator: Equal
+      value: observability
+      effect: NoSchedule
+
+prometheusOperator:
+  nodeSelector:
+      workload: observability
+  tolerations:
+    - key: workload
+      operator: Equal
+      value: observability
+      effect: NoSchedule
+
+  admissionWebhooks:
+    patch:
+      tolerations:
+        - key: workload
+          operator: Equal
+          value: observability
+          effect: NoSchedule
+    create:
+      tolerations:
+        - key: workload
+          operator: Equal
+          value: observability
+          effect: NoSchedule

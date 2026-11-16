@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: dev
+
+resources:
+- ../../base
+- ../../security/network-policies
+- servicemonitor.yaml
+
+    # Image tag follows the commit SHA, aligned with the Kyverno
+    # "disallow-latest-tag" policy for complete traceability.
+
+images:
+- name: portfolio-app
+  newName: acrkubesentrydev.azurecr.io/portfolio-app
+  newTag: 9c386b25
+
+replicas:
+- count: 1
+  name: portfolio-app
+
+labels:
+- pairs:
+    environment: dev

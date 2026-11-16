@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: staging
+
+resources:
+  - ../../base
+
+images:
+  - name: portfolio-app
+    newName: acrkubesentrydev.azurecr.io/portfolio-app
+    # In staging, pin an explicit immutable tag (not "latest")
+    # for strict traceability of deployed revisions.
+    newTag: 5f72be3f
+
+replicas:
+  - name: portfolio-app
+    count: 2
+
+labels:
+  - pairs:
+      environment: staging
+

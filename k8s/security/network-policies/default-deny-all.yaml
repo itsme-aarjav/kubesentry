@@ -1,0 +1,13 @@
+# Blocks ALL ingress and egress traffic by default in the namespace.
+# Nothing passes until an explicit policy authorizes it —
+# the baseline security best practice before adding targeted allow rules.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: dev
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress

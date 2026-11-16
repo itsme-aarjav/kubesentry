@@ -1,0 +1,20 @@
+# Without this rule, default-deny-all would also block DNS resolution,
+# preventing the application from resolving any internal or external endpoints.
+# Authorizes egress to kube-dns/CoreDNS on port 53 (UDP & TCP).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: dev
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

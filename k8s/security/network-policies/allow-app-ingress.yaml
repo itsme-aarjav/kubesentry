@@ -1,0 +1,22 @@
+# Authorizes ingress traffic to portfolio-app ONLY on port 8080
+# (the port exposed by the Service). Without this rule, even legitimate
+# traffic to the app would be blocked by default-deny-all.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-app-ingress
+  namespace: dev
+spec:
+  podSelector:
+    matchLabels:
+      app: portfolio-app
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 8080
+      # No "from" specified = in Kubernetes, omitting the "from" field
+      # allows ALL sources on the specified port.
+      # This allows both ArgoCD/kubelet (probes) and Prometheus (monitoring namespace)
+      # to reach the application without additional boilerplate rules.
