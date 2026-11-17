@@ -1,4 +1,13 @@
-# KubeSentry — Agentic AIOps & GitOps Platform on Azure
+# 🛡️ KubeSentry — Agentic AIOps & GitOps Platform on Azure
+
+[![Azure AKS](https://img.shields.io/badge/Azure-AKS_v1.36.5-0078D4?logo=microsoftazure&logoColor=white)](https://azure.microsoft.com/en-us/products/kubernetes-service/)
+[![Terraform](https://img.shields.io/badge/IaC-Terraform-844FBA?logo=terraform&logoColor=white)](https://www.terraform.io/)
+[![GitLab CI](https://img.shields.io/badge/GitLab_CI-8_Jobs_Passed-FC6D26?logo=gitlab&logoColor=white)](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3077910406)
+[![Argo CD](https://img.shields.io/badge/GitOps-Argo_CD_Synced-EF6134?logo=argo&logoColor=white)](https://argoproj.github.io/cd/)
+[![Kyverno](https://img.shields.io/badge/Policy-Kyverno-000000?logo=kyverno&logoColor=white)](https://kyverno.io/)
+[![Trivy](https://img.shields.io/badge/Security-Trivy_0_CVEs-1E90FF?logo=aquasec&logoColor=white)](https://trivy.dev/)
+[![Prometheus](https://img.shields.io/badge/Observability-Prometheus_•_Grafana-F46800?logo=grafana&logoColor=white)](https://grafana.com/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.9-6DB33F?logo=springboot&logoColor=white)](https://spring.io/)
 
 A production-style Kubernetes platform built on Azure (AKS), designed around a **security-by-design** and **GitOps-first** philosophy rather than bolted-on tooling. This project covers the full lifecycle of a cloud-native application: infrastructure provisioning, secure CI/CD, continuous deployment, runtime security enforcement, autoscaling, and real-time observability with alerting.
 

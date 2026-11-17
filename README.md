@@ -1,13 +1,36 @@
-# KubeSentry: Enterprise DevSecOps & Agentic AIOps Platform
+# 🛡️ KubeSentry: Enterprise DevSecOps & Agentic AIOps Platform
 
 [![Azure AKS](https://img.shields.io/badge/Azure-AKS_v1.36.5-0078D4?logo=microsoftazure&logoColor=white)](https://azure.microsoft.com/en-us/products/kubernetes-service/)
-[![GitLab CI/CD](https://img.shields.io/badge/GitLab_CI-7_Stage_•_8_Jobs-FC6D26?logo=gitlab&logoColor=white)](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3077621954)
-[![GitOps](https://img.shields.io/badge/GitOps-Argo_CD-EF6134?logo=argo&logoColor=white)](https://argoproj.github.io/cd/)
-[![AIOps](https://img.shields.io/badge/AIOps-Azure_AI_Foundry_•_MCP-0078D4?logo=openai&logoColor=white)](https://ai.azure.com/)
-[![Security](https://img.shields.io/badge/Security-Sigstore_Cosign_•_Kyverno-326CE5?logo=kubernetes&logoColor=white)](https://kyverno.io/)
-[![Java](https://img.shields.io/badge/Java-21_•_Spring_Boot_4.0.9-ED8B00?logo=openjdk&logoColor=white)](https://spring.io/)
+[![Terraform](https://img.shields.io/badge/IaC-Terraform-844FBA?logo=terraform&logoColor=white)](https://www.terraform.io/)
+[![GitLab CI/CD](https://img.shields.io/badge/GitLab_CI-8_Jobs_Passed-FC6D26?logo=gitlab&logoColor=white)](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3077910406)
+[![Argo CD GitOps](https://img.shields.io/badge/GitOps-Argo_CD_Synced-EF6134?logo=argo&logoColor=white)](https://argoproj.github.io/cd/)
+[![Azure AI Foundry](https://img.shields.io/badge/AIOps-Azure_AI_Foundry_v7-0078D4?logo=openai&logoColor=white)](https://ai.azure.com/)
+[![MCP](https://img.shields.io/badge/Protocol-Model_Context_Protocol-D97706?logo=anthropic&logoColor=white)](https://modelcontextprotocol.io/)
+[![Sigstore Cosign](https://img.shields.io/badge/Supply_Chain-Cosign_Signed-4A90E2?logo=sigstore&logoColor=white)](https://www.sigstore.dev/)
+[![Trivy Gate](https://img.shields.io/badge/Security-Trivy_0_CVEs-1E90FF?logo=aquasec&logoColor=white)](https://trivy.dev/)
+[![Semgrep SAST](https://img.shields.io/badge/SAST-Semgrep_Clean-00D084?logo=semgrep&logoColor=white)](https://semgrep.dev/)
+[![Kyverno](https://img.shields.io/badge/Policy-Kyverno_Enforcing-000000?logo=kyverno&logoColor=white)](https://kyverno.io/)
+[![Prometheus & Grafana](https://img.shields.io/badge/Observability-Prometheus_•_Grafana-F46800?logo=grafana&logoColor=white)](https://grafana.com/)
+[![Spring Boot](https://img.shields.io/badge/Java_21-Spring_Boot_4.0.9-6DB33F?logo=springboot&logoColor=white)](https://spring.io/)
+[![Let's Encrypt](https://img.shields.io/badge/TLS-Let's_Encrypt_HTTPS-003A70?logo=letsencrypt&logoColor=white)](https://letsencrypt.org/)
 
 A production-grade, security-by-design Kubernetes platform running on **Microsoft Azure (AKS)**. KubeSentry combines an **end-to-end Zero-Trust DevSecOps pipeline**, **declarative GitOps continuous delivery**, **full-stack observability**, and an **Autonomous SRE AI Incident Investigator** built on **Azure AI Foundry** and the **Model Context Protocol (MCP)**.
+
+---
+
+### ⚡ Recruiter & Architect Fast-Facts
+
+| Pillar | Engineering Implementation & Live Metrics | Verification Status |
+|:---|:---|:---:|
+| **Live Application URL** | **[`https://portfolio.20-19-153-146.nip.io`](https://portfolio.20-19-153-146.nip.io/)** (Let's Encrypt TLS, HTTP/2 200 `Spring is here!`) | 🟢 **Verified Live** |
+| **Cloud Infrastructure** | **Azure AKS v1.36.5** (Dual Node Pools: `system` + `monitoring`, Azure CNI, France Central) | 🟢 **Running** |
+| **CI/CD Pipeline** | **GitLab CI [Pipeline #3077910406](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3077910406)** (8/8 jobs passed: SAST, Unit Test, Build, Scan, Push, Sign, AI Review, Deploy) | 🟢 **8/8 Passed** |
+| **Declarative GitOps** | **Argo CD** managing 2 autonomous applications: `portfolio-app-dev` (App) and `portfolio-alerts` (PrometheusRule GitOps) | 🟢 **Synced & Healthy** |
+| **Security Gates** | **Trivy** hard blocking gate (`--exit-code 1`, 0 High/Crit CVEs) + **Semgrep SAST** (0 findings) | 🟢 **0 Findings** |
+| **Zero-Trust Identity** | **Microsoft Entra Workload Identity** (OIDC federation to Key Vault Secrets Store CSI Driver & ACR) | 🟢 **Passwordless** |
+| **Software Supply Chain** | **Sigstore Cosign** keyless container signing + **Syft** SPDX SBOM attached to ACR OCI 1.1 referrers | 🟢 **Signed & Attested** |
+| **Admission Governance** | **Kyverno** admission controller enforcing `disallow-latest-tag` and `disallow-root-user` | 🟢 **Enforcing** |
+| **Autonomous AIOps** | **Azure AI Foundry Agent** (`k8s-incident-investigator` v7, `gpt-5-mini`) with K8s & Prometheus MCP tools + Grounded RAG | 🟢 **Diagnose-Only** |
 
 ---
 
@@ -73,8 +96,8 @@ A production-grade, security-by-design Kubernetes platform running on **Microsof
    - **Passwordless Identity**: **Microsoft Entra Workload Identity** federated with AKS OIDC issuer and **Azure Key Vault Secrets Store CSI Driver** for zero static secret storage.
 
 3. **Declarative GitOps Delivery**:
-   - Continuous reconciliation via **Argo CD** (application `portfolio-app-dev`). The CI pipeline never touches the cluster directly with `kubectl`; it builds, scans, signs, and commits updated image tags to `k8s/overlays/dev/`, enforcing pull-based declarative synchronization.
-   - **Current Verified Deployment**: Image `acrkubesentrydev.azurecr.io/portfolio-app:7a01e939` (digest `sha256:07eeecae39a70b91563a8608ce01c0aa64d1be8e6d3a39b855b89642e636d795`), synchronized at GitOps revision `aeee8c907cf53d81d5bce8ec6f586982760c519e` (`aeee8c9`).
+   - Continuous reconciliation via **Argo CD** (managing applications `portfolio-app-dev` and `portfolio-alerts`). The CI pipeline never touches the cluster directly with `kubectl`; it builds, scans, signs, and commits updated image tags to `k8s/overlays/dev/`, enforcing pull-based declarative synchronization.
+   - **Current Verified Deployment**: Image `acrkubesentrydev.azurecr.io/portfolio-app:990e5963` (digest `sha256:7ac6f2fd51604f713cf092bc8c827e67c37aa950dd81717baa0705c24362966d`), deployed via GitLab CI [Pipeline #3077910406](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3077910406) and synchronized at GitOps revision `0f8e64d0e6b371fafef678d29716d618d299ec92` (`0f8e64d`).
    - **Autoscaling Configuration**: HPA is pinned to `minReplicas: 1, maxReplicas: 1` (target 70% CPU, 80% Memory) to strictly respect the 30-pod Azure CNI limit on `Standard_D2ads_v7` nodes.
    - **Service & Ingress Topology**: The Spring Boot portfolio application is accessible publicly over HTTPS at **`https://portfolio.20-19-153-146.nip.io`** with automated Let's Encrypt TLS certificates, backed by `portfolio-app:80` (ClusterIP). The MCP tools are independently exposed via authenticated Ingress at `https://mcp.20-19-153-146.nip.io` with Basic Auth.
 
@@ -89,19 +112,19 @@ A production-grade, security-by-design Kubernetes platform running on **Microsof
 ## 🛠 Tech Stack
 
 | Domain | Technology / Tool | Version / Details |
-|---|---|---|
-| **Cloud Provider** | Microsoft Azure | AKS, ACR, Azure Key Vault, Azure AI Search, Azure Storage |
-| **Kubernetes** | Azure Kubernetes Service (AKS) | v1.36.5, 2 node pools (`system` and `monitoring`), Azure CNI |
-| **Infrastructure as Code** | Terraform | Modular Azure infrastructure with remote state backend |
-| **AIOps & Investigation** | Azure AI Foundry & Model Context Protocol | `k8s-incident-investigator` (`gpt-5-mini`), `k8s-mcp-server`, `prometheus-mcp-server` |
-| **Knowledge Retrieval (RAG)** | Azure AI Search | Indexer and index over `agent-knowledge.md` runbooks |
-| **Continuous Integration** | GitLab CI/CD | 7-stage (8 jobs) automated DevSecOps pipeline with OIDC Azure authentication |
-| **Continuous Delivery (GitOps)** | Argo CD | Declarative GitOps synchronization with Kustomize overlays |
-| **Vulnerability Scanning** | Trivy & Semgrep | Blocking container scan (`--exit-code 1`), Semgrep SAST |
-| **Supply Chain Security** | Sigstore Cosign & Syft | Keyless container signing, SPDX JSON SBOM generation |
-| **Policy Engine** | Kyverno | 2 ClusterPolicies for Kubernetes pod security standards |
-| **Observability** | Prometheus, Grafana, Alertmanager | `kube-prometheus-stack`, Prometheus Pushgateway, custom JVM & HTTP dashboards |
-| **Application** | Spring Boot | Spring Boot 4.0.9 (Java 21, Tomcat 11), Eclipse Temurin, multi-stage non-root container |
+|:---|:---|:---|
+| **Cloud Provider** | ![Azure](https://img.shields.io/badge/Microsoft_Azure-0078D4?style=flat-square&logo=microsoftazure&logoColor=white) | AKS, ACR, Azure Key Vault, Azure AI Search, Azure Storage |
+| **Kubernetes** | ![AKS](https://img.shields.io/badge/AKS_v1.36.5-326CE5?style=flat-square&logo=kubernetes&logoColor=white) | Dual node pools (`system` & `monitoring`), Azure CNI, France Central |
+| **Infrastructure as Code** | ![Terraform](https://img.shields.io/badge/Terraform_IaC-844FBA?style=flat-square&logo=terraform&logoColor=white) | Modular Azure infrastructure with remote state backend & locking |
+| **AIOps & Investigation** | ![Azure AI](https://img.shields.io/badge/AI_Foundry_•_MCP-0078D4?style=flat-square&logo=openai&logoColor=white) | `k8s-incident-investigator` (`gpt-5-mini`), `k8s-mcp-server`, `prometheus-mcp-server` |
+| **Knowledge Retrieval (RAG)** | ![AI Search](https://img.shields.io/badge/Azure_AI_Search-0078D4?style=flat-square&logo=microsoftazure&logoColor=white) | Automated indexer & vector search over `agent-knowledge.md` runbooks |
+| **Continuous Integration** | ![GitLab](https://img.shields.io/badge/GitLab_CI/CD-FC6D26?style=flat-square&logo=gitlab&logoColor=white) | 7-stage (8 jobs) automated DevSecOps pipeline with OIDC Azure federation |
+| **Continuous Delivery (GitOps)** | ![ArgoCD](https://img.shields.io/badge/Argo_CD-EF6134?style=flat-square&logo=argo&logoColor=white) | Pull-based GitOps sync with Kustomize overlays & automated pruning |
+| **Vulnerability Scanning** | ![Trivy](https://img.shields.io/badge/Trivy_•_Semgrep-1E90FF?style=flat-square&logo=aquasec&logoColor=white) | Hard blocking container scan (`--exit-code 1`), Semgrep SAST |
+| **Supply Chain Security** | ![Cosign](https://img.shields.io/badge/Cosign_•_Syft-4A90E2?style=flat-square&logo=sigstore&logoColor=white) | Keyless container signing, SPDX JSON SBOM attached via OCI 1.1 referrers |
+| **Policy Engine** | ![Kyverno](https://img.shields.io/badge/Kyverno-000000?style=flat-square&logo=kyverno&logoColor=white) | 2 ClusterPolicies for Kubernetes pod security standards & non-root enforcement |
+| **Observability** | ![Prometheus](https://img.shields.io/badge/Prometheus_•_Grafana-F46800?style=flat-square&logo=grafana&logoColor=white) | `kube-prometheus-stack`, Prometheus Pushgateway, custom JVM & HTTP dashboards |
+| **Application Runtime** | ![Spring Boot](https://img.shields.io/badge/Spring_Boot_4.0.9-6DB33F?style=flat-square&logo=springboot&logoColor=white) | Java 21, Tomcat 11, Eclipse Temurin base, multi-stage non-root container |
 
 ---
 
@@ -238,7 +261,8 @@ kubesentry/
 2. [AI Incident Investigator Architecture & RAG Retrieval](ai-agent/docs/ai-agent-README.md)
 3. [Incident Investigation Demo Scenarios](ai-agent/demo-scenarios.md)
 4. [Live Incident Investigation Transcript (Foundry Agent v7)](ai-agent/docs/live_ai_incident_investigation.md)
-5. [Live Pipeline #3076259725 Security Verification](ai-agent/docs/live_ai_security_review_report.md)
-6. [Platform Architectural Trade-offs & Engineering Decisions](TRADE-OFFS.md)
-7. [Platform Troubleshooting & Resolution History](docs/devsecops-troubleshooting.md)
-8. [AI Agent Troubleshooting & Quota History](ai-agent/docs/ai-agent-troubleshooting.md)
+5. [Live Security Verification & AI Review Report](ai-agent/docs/live_ai_security_review_report.md)
+6. [Live Pipeline Execution & GitOps Verification Summary](docs/live_pipeline_3076259725_summary.md)
+7. [Platform Architectural Trade-offs & Engineering Decisions](TRADE-OFFS.md)
+8. [Platform Troubleshooting & Resolution History](docs/devsecops-troubleshooting.md)
+9. [AI Agent Troubleshooting & Quota History](ai-agent/docs/ai-agent-troubleshooting.md)

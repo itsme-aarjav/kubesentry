@@ -1,4 +1,11 @@
-# AI Incident Investigator — Azure AI Foundry & Kubernetes
+# 🤖 AI Incident Investigator — Azure AI Foundry & Kubernetes
+
+[![Azure AI Foundry](https://img.shields.io/badge/AIOps-Azure_AI_Foundry_v7-0078D4?logo=openai&logoColor=white)](https://ai.azure.com/)
+[![Model](https://img.shields.io/badge/Model-GPT--5--mini-10A37F?logo=openai&logoColor=white)](https://openai.com/)
+[![MCP](https://img.shields.io/badge/Protocol-Model_Context_Protocol-D97706?logo=anthropic&logoColor=white)](https://modelcontextprotocol.io/)
+[![Azure AI Search](https://img.shields.io/badge/RAG-Azure_AI_Search-0078D4?logo=microsoftazure&logoColor=white)](https://azure.microsoft.com/)
+[![Prometheus Pushgateway](https://img.shields.io/badge/Telemetry-Pushgateway-E6522C?logo=prometheus&logoColor=white)](https://prometheus.io/)
+[![Role](https://img.shields.io/badge/Scope-Diagnose--Only-blueviolet)](https://github.com/itsme-aarjav/kubesentry)
 
 An AI-powered incident investigation agent built on top of the **Azure Kubernetes Service (AKS)** platform, designed to assist with **real-time Kubernetes troubleshooting and observability-driven incident analysis**. The agent connects operational telemetry, Kubernetes cluster information, Prometheus metrics, logs, and the project knowledge base to investigate incidents, identify potential root causes, and provide actionable remediation guidance.
 
