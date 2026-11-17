@@ -30,7 +30,7 @@ spec:
             - name: PROMETHEUS_MCP_SERVER_TRANSPORT
               value: "http"
             - name: PROMETHEUS_MCP_BIND_HOST
-              value: "0.0.0.0"          # 0.0.0.0, pas localhost — sinon injoignable depuis le Service K8s
+              value: "0.0.0.0"          # 0.0.0.0, not localhost — otherwise unreachable from the K8s Service
             - name: PROMETHEUS_MCP_BIND_PORT
               value: "8080"
           ports: [{ containerPort: 8080 }]

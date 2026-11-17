@@ -24,7 +24,7 @@ originally planned model (`gpt-4o-mini`) was later deprecated
 mid-project. `gpt-5-mini GlobalStandard` was used instead, but does not guarantee the request is processed
 within a specific region. Acceptable here: no data residency
 requirement for this project. See `ai-agent/docs/ai-agent-troubleshooting.md`
-§10.
+Incident #7.
 
 **Shared static Basic Auth credential across four consumers.** The
 same password protects the Ingress and is independently referenced in
@@ -32,7 +32,7 @@ the GitLab CI/CD variable, the Kubernetes secret, and two separate MCP
 tool configurations in the Foundry portal. There is no automatic
 rotation and no single source of truth — a manual credential change
 must be propagated to all four places by hand (learned the hard way,
-see `ai-agent/docs/ai-agent-troubleshooting.md` §27). Roadmap: a secret per
+see `ai-agent/docs/ai-agent-troubleshooting.md` Incident #22). Roadmap: a secret per
 consumer, or an automated rotation/vault mechanism.
 
 ## Azure resource management
@@ -66,7 +66,7 @@ conversations would require Application Insights — left as roadmap.
 
 **No dedicated node pool added for the AI agent's components.** The
 free-tier subscription's 4-vCPU regional quota made adding a node
-pool impossible (see `ai-agent/docs/ai-agent-troubleshooting.md` §11). Instead,
+pool impossible (see `ai-agent/docs/ai-agent-troubleshooting.md` Incident #8). Instead,
 all agent components (MCP servers, Pushgateway, cert-manager's solver
 pods, the ingress controller itself) were deliberately scheduled on
 the existing, underused `monitoring` node pool rather than the

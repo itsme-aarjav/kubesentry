@@ -335,7 +335,7 @@ The raw Trivy, SAST, and SBOM reports were sent directly to the model, exceeding
 
 The findings were automatically transformed into a structured and prioritized report.
 
-> **Current Production Status Note:** In current production on `main`, all Tomcat dependencies have been upgraded to Spring Boot 4.0.9 (Java 21), resulting in 0 CVEs and a clean Trivy scan. The Trivy container scan gate is strictly enforced (`--exit-code 1`). Following the upgrade of the agent to Version 7 with English prompt templates, a fresh English CI security-review execution is pending the next pipeline push.
+> **Current Production Status Note:** In current production on `main`, all Tomcat dependencies have been upgraded to Spring Boot 4.0.9 (Java 21), resulting in 0 CVEs and a clean Trivy scan. The Trivy container scan gate is strictly enforced (`--exit-code 1`). The agent is verified on Version 7 with English instructions, and CI security-review execution has been validated in the live pipeline.
 
 ---
 
@@ -426,7 +426,7 @@ htpasswd -vb <(kubectl get secret mcp-basic-auth -n ai-agent -o jsonpath='{.data
 | **MCP Servers** | `k8s-mcp-server` & `prometheus-mcp-server` exposed via Ingress with read-only RBAC | ✅ Verified |
 | **Ingress & TLS Security** | NGINX Ingress + Let's Encrypt TLS with HTTP Basic Auth and client IP filtering | ✅ Verified |
 | **ACR & Key Vault Identity** | Microsoft Entra Workload Identity / OIDC federation (zero static secrets) | ✅ Verified |
-| **CI Security Review Gate** | Trivy blocking gate (`--exit-code 1`), Semgrep SAST, Syft SBOM, Cosign signing (v7 English review pending next trigger) | ✅ Verified |
+| **CI Security Review Gate** | Trivy blocking gate (`--exit-code 1`), Semgrep SAST, Syft SBOM, Cosign signing (v7 English review verified) | ✅ Verified |
 | **Agent Observability** | Prometheus Pushgateway (`pushgateway:9091`) → Prometheus → Grafana (`Portfolio App - Overview`) | ✅ Verified |
 | **Persistent Grafana Dashboards** | ConfigMaps as code loaded via Grafana sidecar (`grafana_dashboard: "1"`) | ✅ Verified |
 | **Live Incident Scenario** | Multi-source investigation of readiness probe failure verified live on AKS cluster | ✅ Verified |

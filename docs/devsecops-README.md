@@ -283,7 +283,7 @@ Every push to `main` triggers a `.gitlab-ci.yml` pipeline that enforces security
 3. **Trivy image scan** — scans every OS package and application dependency layer of the built image against CVE databases, configured to **fail the build** (`--exit-code 1`) above HIGH/CRITICAL severity — a vulnerable image cannot physically reach the registry.
 4. **Push to ACR**.
 5. **Image signing + SBOM** — the image is cryptographically signed with Cosign (keyless, via GitLab's OIDC identity), and a Software Bill of Materials is generated with Syft and attached as an attestation. This closes the loop between "the pipeline scanned it" and "the image's provenance is verifiable."
-6. **Manifest update** — the pipeline's final job updates the image tag in `k8s/overlays/dev` and commits it back to the repo (`[skip ci]` to avoid a pipeline loop) — this Git commit is what actually triggers deployment, via ArgoCD, not the pipeline itself.
+6. **Manifest update** — the pipeline's final job updates the image tag in `k8s/overlays/dev` and commits it back to the repository using `git push -o ci.skip` (with commit subject `KubeSentry` to maintain strict commit standards while preventing pipeline recursion) — this Git commit is what actually triggers deployment, via ArgoCD, not the pipeline itself.
 
 This is **shift-left security**: checks happen at the earliest possible stage (commit/build time) instead of being discovered in production.
 

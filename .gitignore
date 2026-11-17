@@ -22,6 +22,7 @@
 /nbbuild/
 /dist/
 /nbdist/
+.nb-gradle/
 
 # Terraform
 .terraform/
@@ -33,7 +34,6 @@ tfplan
 *.tfvars.json
 crash.log
 crash.*.log
-.nb-gradle/
 
 # Kubernetes / kubeconfig / secrets
 kubeconfig

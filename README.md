@@ -1,7 +1,7 @@
 # KubeSentry: Enterprise DevSecOps & Agentic AIOps Platform
 
-[![Azure AKS](https://img.shields.io/badge/Azure-AKS_v1.30.7-0078D4?logo=microsoftazure&logoColor=white)](https://azure.microsoft.com/en-us/products/kubernetes-service/)
-[![GitLab CI/CD](https://img.shields.io/badge/GitLab_CI-8_Stage_Pipeline-FC6D26?logo=gitlab&logoColor=white)](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3076259725)
+[![Azure AKS](https://img.shields.io/badge/Azure-AKS_v1.36.5-0078D4?logo=microsoftazure&logoColor=white)](https://azure.microsoft.com/en-us/products/kubernetes-service/)
+[![GitLab CI/CD](https://img.shields.io/badge/GitLab_CI-7_Stage_•_8_Jobs-FC6D26?logo=gitlab&logoColor=white)](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3076259725)
 [![GitOps](https://img.shields.io/badge/GitOps-Argo_CD-EF6134?logo=argo&logoColor=white)](https://argoproj.github.io/cd/)
 [![AIOps](https://img.shields.io/badge/AIOps-Azure_AI_Foundry_•_MCP-0078D4?logo=openai&logoColor=white)](https://ai.azure.com/)
 [![Security](https://img.shields.io/badge/Security-Sigstore_Cosign_•_Kyverno-326CE5?logo=kubernetes&logoColor=white)](https://kyverno.io/)
@@ -62,13 +62,13 @@ A production-grade, security-by-design Kubernetes platform running on **Microsof
    - Integrates an AI Incident Investigator (`k8s-incident-investigator`, powered by `gpt-5-mini` on Azure AI Foundry).
    - Equips the agent with read-only **Model Context Protocol (MCP)** tools (`kubernetes-cluster` and `prometheus-metrics`) exposed over TLS-secured Ingress.
    - Grounds troubleshooting in runbooks via **Azure AI Search** (`srch-kubesentry-dev` / `kubesentry-index`) indexing `agent-knowledge.md`.
-   - Strictly enforces **diagnose-only guardrails**: zero cluster write access, automated secret redacting, and human-in-the-loop approval.
+   - Strictly enforces **diagnose-only guardrails**: zero cluster write access, strict read-only RBAC, and automated secret exclusion (no automated mutations; remediation execution left to human operators).
 
 2. **Zero-Trust Security Perimeter**:
    - **Container Security**: Vulnerability scanning via **Trivy** with a strict blocking gate (`--exit-code 1 --severity HIGH,CRITICAL`).
    - **Static Analysis (SAST)**: Automated code scanning with **Semgrep** integrated into CI.
    - **Supply Chain Integrity**: Software Bill of Materials (**SBOM**) generation via **Syft** and cryptographic container signing using Sigstore **Cosign** (OIDC keyless signing pushed to ACR OCI 1.1 referrers).
-   - **Runtime Admission Control**: **Kyverno** admission controller enforcing 5 cluster policies (disallowing privileged containers, enforcing read-only root filesystems, requiring resource limits, and blocking default namespaces).
+   - **Runtime Admission Control**: **Kyverno** admission controller enforcing 2 cluster policies (`disallow-latest-tag` prohibiting mutable tags, and `disallow-root-user` enforcing non-root container execution).
    - **Network Isolation**: Kubernetes **NetworkPolicies** enforcing default-deny traffic with explicit least-privilege egress and ingress rules.
    - **Passwordless Identity**: **Microsoft Entra Workload Identity** federated with AKS OIDC issuer and **Azure Key Vault Secrets Store CSI Driver** for zero static secret storage.
 
@@ -87,15 +87,15 @@ A production-grade, security-by-design Kubernetes platform running on **Microsof
 | Domain | Technology / Tool | Version / Details |
 |---|---|---|
 | **Cloud Provider** | Microsoft Azure | AKS, ACR, Azure Key Vault, Azure AI Search, Azure Storage |
-| **Kubernetes** | Azure Kubernetes Service (AKS) | v1.30.7, 2 node pools (`system` and `monitoring`), Azure CNI |
+| **Kubernetes** | Azure Kubernetes Service (AKS) | v1.36.5, 2 node pools (`system` and `monitoring`), Azure CNI |
 | **Infrastructure as Code** | Terraform | Modular Azure infrastructure with remote state backend |
 | **AIOps & Investigation** | Azure AI Foundry & Model Context Protocol | `k8s-incident-investigator` (`gpt-5-mini`), `k8s-mcp-server`, `prometheus-mcp-server` |
 | **Knowledge Retrieval (RAG)** | Azure AI Search | Indexer and index over `agent-knowledge.md` runbooks |
-| **Continuous Integration** | GitLab CI/CD | 8-stage automated DevSecOps pipeline with OIDC Azure authentication |
+| **Continuous Integration** | GitLab CI/CD | 7-stage (8 jobs) automated DevSecOps pipeline with OIDC Azure authentication |
 | **Continuous Delivery (GitOps)** | Argo CD | Declarative GitOps synchronization with Kustomize overlays |
 | **Vulnerability Scanning** | Trivy & Semgrep | Blocking container scan (`--exit-code 1`), Semgrep SAST |
-| **Supply Chain Security** | Sigstore Cosign & Syft | Keyless container signing, CycloneDX SBOM generation |
-| **Policy Engine** | Kyverno | 5 ClusterPolicies for Kubernetes pod security standards |
+| **Supply Chain Security** | Sigstore Cosign & Syft | Keyless container signing, SPDX JSON SBOM generation |
+| **Policy Engine** | Kyverno | 2 ClusterPolicies for Kubernetes pod security standards |
 | **Observability** | Prometheus, Grafana, Alertmanager | `kube-prometheus-stack`, Prometheus Pushgateway, custom JVM & HTTP dashboards |
 | **Application** | Spring Boot | Spring Boot 4.0.9 (Java 21, Tomcat 11), Eclipse Temurin, multi-stage non-root container |
 
@@ -103,7 +103,7 @@ A production-grade, security-by-design Kubernetes platform running on **Microsof
 
 ## 🔄 CI/CD Pipeline Flow
 
-Every commit pushed to `main` undergoes a rigorous, automated 8-stage verification pipeline before deployment:
+Every commit pushed to `main` undergoes a rigorous, automated 7-stage (8 jobs) verification pipeline before deployment:
 
 ```text
   ┌─────────────┐     ┌──────────────────┐     ┌─────────────┐     ┌──────────────────┐
@@ -129,7 +129,7 @@ Every commit pushed to `main` undergoes a rigorous, automated 8-stage verificati
 3. **`build`**: Builds an optimized multi-stage container image using Kaniko / Docker build tools.
 4. **`container_scan`**: Scans the container image with Trivy using strict gating (`--exit-code 1 --severity HIGH,CRITICAL`).
 5. **`push_to_acr`**: Authenticates passwordlessly via Microsoft Entra Workload Identity / OIDC and pushes the image to Azure Container Registry (`acrkubesentrydev.azurecr.io`).
-6. **`sign_and_sbom`**: Generates a CycloneDX SBOM (`sbom.json`) using Syft, then generates a cryptographic keyless signature via Sigstore Cosign and attaches both as OCI 1.1 referrers.
+6. **`sign_and_sbom`**: Generates an SPDX JSON SBOM (`sbom.json`) using Syft, then generates a cryptographic keyless signature via Sigstore Cosign and attaches both as OCI 1.1 referrers.
 7. **`ai_security_review`**: Sends security telemetry (Trivy CVEs, SAST findings, SBOM components) to the Azure AI Foundry Incident Investigator, saves the structured review artifact, and pushes latency/success metrics to Prometheus Pushgateway.
 8. **`update_manifest`**: Commits the verified image tag directly to the GitOps Kustomize overlay in `k8s/overlays/dev/`, triggering Argo CD to reconcile the AKS cluster.
 
@@ -171,7 +171,7 @@ All screenshots below represent the live, functioning KubeSentry platform runnin
 | Argo CD Application Topology | GitLab Clean Production Pipeline (#3076259725) |
 |---|---|
 | [![Argo CD Topology](docs/screenshots/argocd/live_argocd_application_topology.png)](docs/screenshots/argocd/live_argocd_application_topology.png) | [![GitLab Pipeline](docs/screenshots/live_gitlab_pipeline_3076259725.png)](docs/screenshots/live_gitlab_pipeline_3076259725.png) |
-| *Argo CD actively reconciling Deployment, Service, Ingress, and ReplicaSet in `dev`.* | *All 8 stages passing green including unit tests, SAST, Trivy gate, and Cosign signing.* |
+| *Argo CD actively reconciling Deployment, Service, Ingress, and ReplicaSet in `dev`.* | *All 7 stages (8 jobs) passing green including unit tests, SAST, Trivy gate, and Cosign signing.* |
 
 ### 2. Autonomous SRE Incident Investigation & AI Foundry
 | AI Foundry Agent Evidence Gathering | AI Root Cause Diagnosis & Grounded Runbook |
@@ -183,13 +183,13 @@ All screenshots below represent the live, functioning KubeSentry platform runnin
 | Portfolio App Overview (Grafana) | Prometheus Targets Service Discovery |
 |---|---|
 | [![Grafana App Overview](docs/screenshots/live_dashboard_grafana_overview.png)](docs/screenshots/live_dashboard_grafana_overview.png) | [![Prometheus Targets](docs/screenshots/prometheus/live_prometheus_targets_overview.png)](docs/screenshots/prometheus/live_prometheus_targets_overview.png) |
-| *6 panels: HTTP Request Rate, P95 Latency, CPU Limits, HPA Replicas, and AI Agent Duration.* | *100% healthy scrape endpoints across control plane, nodes, applications, and Pushgateway.* |
+| *6 panels: HTTP Request Rate, P95 Latency, CPU Limits, HPA Replicas, AI Agent Calls, and AI Agent Duration.* | *100% healthy scrape endpoints across control plane, nodes, applications, and Pushgateway.* |
 
 ### 4. Cloud Infrastructure & Security Governance
 | Azure AKS Cluster Overview | Kyverno Admission Controller Policies |
 |---|---|
 | [![AKS Cluster Overview](docs/screenshots/azure/live_aks_cluster_overview.png)](docs/screenshots/azure/live_aks_cluster_overview.png) | [![Kyverno ClusterPolicies](docs/screenshots/cluster/live_kyverno_clusterpolicies.png)](docs/screenshots/cluster/live_kyverno_clusterpolicies.png) |
-| *Live AKS cluster `aks-kubesentry-dev` (v1.30.7) with dual node pools in France Central.* | *Active ClusterPolicies enforcing container security, non-root users, and resource quotas.* |
+| *Live AKS cluster `aks-kubesentry-dev` (v1.36.5) with dual node pools in France Central.* | *Active ClusterPolicies enforcing container security, non-root users, and resource quotas.* |
 
 ---
 
@@ -200,7 +200,7 @@ kubesentry/
 ├── README.md                              # This document: Executive overview and architecture
 ├── CHANGELOG.md                           # Platform evolution and version history
 ├── TRADE-OFFS.md                          # Deliberate architectural trade-offs and scoping decisions
-├── .gitlab-ci.yml                         # Automated 8-stage DevSecOps pipeline definition
+├── .gitlab-ci.yml                         # Automated 7-stage (8 jobs) DevSecOps pipeline definition
 │
 ├── docs/                                  # Core platform documentation
 │   ├── devsecops-README.md                # In-depth DevSecOps, infrastructure, and GitOps guide
@@ -212,7 +212,6 @@ kubesentry/
 │
 ├── ai-agent/                              # Agentic AIOps & Incident Investigator
 │   ├── ai_security_review.py              # CI security review script (Azure AI Foundry client)
-│   ├── agent-knowledge.md                 # RAG runbook documents indexed into Azure AI Search
 │   ├── demo-scenarios.md                  # Step-by-step incident investigation walk-throughs
 │   ├── ai-security-report.md              # Historical demonstration scenario analysis artifact
 │   └── docs/                              # Agent architecture, troubleshooting, and live reports

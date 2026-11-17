@@ -46,8 +46,9 @@ incident was still a fully manual process.
 - Fixed a real `CRITICAL` vulnerability chain
   (`CVE-2026-65182`, `CVE-2026-65905`, `CVE-2026-68525` in
   `tomcat-embed-core`) discovered by the pipeline's own Trivy scan,
-  analyzed by the new AI Security Review, and resolved by pinning
-  `tomcat.version` in `pom.xml`.
+  analyzed by the AI Security Review, and resolved by upgrading
+  `spring-boot-starter-parent` to `4.0.9` (bringing embedded Tomcat 11.0.27)
+  in `pom.xml`.
 
 ### Documentation
 

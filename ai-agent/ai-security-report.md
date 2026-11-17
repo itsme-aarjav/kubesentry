@@ -17,7 +17,7 @@
 |---|---|---|---|---|
 | Container Scanning | Trivy v0.66.0 | `--exit-code 1 --severity CRITICAL,HIGH` | 0 Critical, 0 High | **PASSED** |
 | Static Analysis | Semgrep OSS | GitLab SAST Template | 0 Vulnerabilities (Timeout fixed) | **PASSED** |
-| Supply Chain SBOM | Syft v1.20.0 | CycloneDX JSON (`sbom.json`) | Full component graph generated | **VERIFIED** |
+| Supply Chain SBOM | Syft v1.20.0 | SPDX JSON (`sbom.json`) | Full component graph generated | **VERIFIED** |
 | Artifact Signing | Sigstore Cosign v2.4.1 | Keyless OIDC Referrers | OCI 1.1 signatures attached in ACR | **VERIFIED** |
 
 ---

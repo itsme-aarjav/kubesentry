@@ -39,9 +39,9 @@ The external load‑balancer / Ingress health probe is probing a path that the I
 - **Knowledge-base runbook citation (RAG grounding)**: Azure Load Balancer probe configuration runbook in `agent-knowledge.md` documents this failure mode and recommends aligning LB/Ingress probe paths with application readiness endpoints 【43:0†source】.
 
 ### Impact
-- **User-facing / ingress traffic**: External requests observed as failing or timing out ("application degraded") even though the application Pod and Service are healthy internally.
-- **Blast radius**: Single replica in `dev` → all external traffic to `portfolio-app` in `dev` affected while the cloud LB marks backends unhealthy.
-- **Application health**: Internal metrics and Pod health are normal (low latency, ready), proving an external routing/health-check issue rather than an application crash or resource exhaustion.
+- **Application health**: Internal metrics and Pod health are verified normal (`1/1 Running`, low latency, zero pod restarts), confirming there is no internal crash or resource exhaustion.
+- **External routing assessment**: While internal cluster components are healthy, any observed external degradation stems from upstream load-balancer probe alignment rather than a cluster outage.
+- **Blast radius**: Isolated to the single replica in `dev` if upstream ingress probes drop traffic.
 
 ### Recommended Fix
 1. **Verify Ingress / Azure Load Balancer health-probe configuration (diagnose-only guidance)**:

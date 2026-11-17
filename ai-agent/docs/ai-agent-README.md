@@ -123,11 +123,11 @@ policies, or GitOps controls.
 Rather than a separate standalone Knowledge Base resource, the retrieval pipeline is implemented directly using **Azure AI Search** grounded on Azure Blob Storage, connected into the Azure AI Foundry Project via a managed connection:
 
 ```text
-Git repo (agent-knowledge.md)
-        │  upload
+Knowledge Document (agent-knowledge.md)
+        │  uploaded to
         ▼
 Azure Blob Storage (stfkubesentrydev / knowledge-documents)
-        │  data source: kb-search-datasource
+        │  data source: kubesentry-datasource
         ▼
 Azure AI Search (srch-kubesentry-dev)
         │  indexer: kubesentry-indexer
@@ -140,7 +140,7 @@ Foundry Project connection: kb-search
   - authType: ManagedIdentity / Microsoft Entra ID
   - target index: kubesentry-index
         ▼
-Agent: k8s-incident-investigator
+Agent: k8s-incident-investigator (Version 7)
 ```
 
 **Identities and RBAC involved:**
@@ -206,7 +206,7 @@ stages:
 ```
 
 The `ai_security_review` job:
-- Depends on `container_scan`, `sast`, and `sign_and_sbom` artifacts.
+- Depends on `container_scan`, `semgrep-sast`, and `sign_and_sbom` artifacts.
 - Authenticates via its own OIDC-federated identity
   (`AI_REVIEW_CLIENT_ID`), fully separate from the ACR pipeline
   identity — least privilege between unrelated workflows.

@@ -1,4 +1,3 @@
-````md
 # Demo Scenarios — Kubernetes Incident Investigator
 
 This document presents two deliberately triggered incident scenarios designed to demonstrate the capabilities of the **Kubernetes Incident Investigator**.
@@ -28,7 +27,7 @@ The readiness probe is deliberately configured with an incorrect endpoint:
 kubectl patch deployment portfolio-app -n dev --type='json' -p='[
   {"op": "replace", "path": "/spec/template/spec/containers/0/readinessProbe/httpGet/path", "value": "/actuator/health/readyz"}
 ]'
-````
+```
 
 The application actually exposes:
 
@@ -366,6 +365,3 @@ These two demonstrations therefore illustrate two complementary roles of the Age
 ```
 
 The Agent therefore acts as an **investigation and correlation layer** on top of the operational and security tools already present in the DevSecOps platform.
-
-```
-```
