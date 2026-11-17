@@ -689,7 +689,7 @@ Alertmanager (part of `kube-prometheus-stack`) receives firing alerts, closing t
 │   ├── live_security_trivy_clean.json
 │   └── screenshots/                       # Live platform & observability screenshots
 │       ├── live_dashboard_grafana_overview.png
-│       ├── live_gitlab_pipeline_3076259725.png
+│       ├── live_gitlab_pipeline_3077910406.png
 │       ├── argocd/
 │       ├── azure/
 │       ├── cluster/
@@ -854,9 +854,10 @@ All visual proof artifacts from the live Azure and Kubernetes environment are or
   * [Resource Group Overview (Bottom)](screenshots/azure/live_azure_resources_bottom.png)
   * [AKS Cluster Overview](screenshots/azure/live_aks_cluster_overview.png)
 * **GitOps & Delivery**:
-  * [GitLab CI/CD Pipeline #3076259725 (8/8 Passed)](screenshots/live_gitlab_pipeline_3076259725.png)
+  * [GitLab CI/CD Pipeline #3077910406 (8/8 Passed)](screenshots/live_gitlab_pipeline_3077910406.png)
   * [Argo CD Applications Overview](screenshots/argocd/live_argocd_applications_overview.png)
   * [Argo CD Application Topology Tree](screenshots/argocd/live_argocd_application_topology.png)
+  * [Argo CD Alerts Application Topology Tree](screenshots/argocd/live_argocd_application_alerts_topology.png)
 * **Kubernetes Runtime & Policy Enforcement**:
   * [Cluster Pods All Namespaces](screenshots/cluster/live_kubectl_pods_all.png)
   * [Kyverno ClusterPolicies Enforcing](screenshots/cluster/live_kyverno_clusterpolicies.png)

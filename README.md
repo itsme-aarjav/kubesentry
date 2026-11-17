@@ -172,10 +172,10 @@ The KubeSentry AI Investigator acts as an autonomous tier-1 SRE engineer for Kub
 All screenshots below represent the live, functioning KubeSentry platform running in Azure:
 
 ### 1. Declarative GitOps & CI/CD Pipeline
-| Argo CD Application Topology | GitLab Clean Production Pipeline (#3076259725 Baseline) |
+| Argo CD Application Topology | GitLab Production Pipeline (#3077910406) |
 |---|---|
-| [![Argo CD Topology](docs/screenshots/argocd/live_argocd_application_topology.png)](docs/screenshots/argocd/live_argocd_application_topology.png) | [![GitLab Pipeline](docs/screenshots/live_gitlab_pipeline_3076259725.png)](docs/screenshots/live_gitlab_pipeline_3076259725.png) |
-| *Argo CD actively reconciling Deployment, Service, and ReplicaSet in `dev`.* | *All 7 stages (8 jobs) passing green; baseline verified run captured, succeeded by active pipeline #3077621954.* |
+| [![Argo CD Topology](docs/screenshots/argocd/live_argocd_application_topology.png)](docs/screenshots/argocd/live_argocd_application_topology.png) | [![GitLab Pipeline](docs/screenshots/live_gitlab_pipeline_3077910406.png)](docs/screenshots/live_gitlab_pipeline_3077910406.png) |
+| *Argo CD actively reconciling Deployment, Service, Ingress, and ReplicaSet in `dev`.* | *All 8 jobs passing green; automated build, scan, sign, AI review, and GitOps update verified.* |
 
 ### 2. Autonomous SRE Incident Investigation & AI Foundry
 | AI Foundry Agent Evidence Gathering | AI Root Cause Diagnosis & Grounded Runbook |
