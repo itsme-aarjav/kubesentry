@@ -633,7 +633,7 @@ The deployment pipeline only manages the application and Kubernetes configuratio
 
 To find it: open Grafana (see [Getting Started](#getting-started)), go to **Dashboards** in the left sidebar — it appears in the list as **"Portfolio App - Overview"**, no manual import needed. It shows HTTP request rate by status, p95 latency, CPU usage against limits, current HPA replica count, and AI agent CI review metrics.
 
-**Alerting**: `k8s/overlays/dev/alerts.yaml` defines `PrometheusRule` resources evaluated continuously:
+**Alerting**: `k8s/monitoring/alerts.yaml` defines `PrometheusRule` resources evaluated continuously, managed declaratively via GitOps through Argo CD (`argocd/application-alerts.yaml`):
 - Pod crash-loop and downtime detection (`PortfolioAppDown`).
 - Sustained high CPU usage (`PortfolioAppHighCpu`, >80% for 5m).
 - High p95 HTTP request latency (`PortfolioAppHighLatency`, >1s for 5m).
@@ -718,9 +718,12 @@ Alertmanager (part of `kube-prometheus-stack`) receives firing alerts, closing t
 │   │   ├── service.yaml
 │   │   └── serviceaccount.yaml
 │   │
+│   ├── monitoring/
+│   │   └── alerts.yaml                    # Declarative PrometheusRule (Argo CD managed in monitoring namespace)
+│   │
 │   ├── overlays/
 │   │   ├── dev/
-│   │   │   ├── alerts.yaml
+│   │   │   ├── ingress.yaml               # Public HTTPS Ingress (Let's Encrypt TLS)
 │   │   │   ├── kustomization.yaml
 │   │   │   └── servicemonitor.yaml
 │   │   └── staging/
@@ -803,13 +806,13 @@ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/st
 kubectl apply -f https://github.com/kyverno/kyverno/releases/latest/download/install.yaml
 kubectl apply -f k8s/security/kyverno/
 
-# 4. Deploy the application (ArgoCD takes over from here)
+# 4. Deploy the application & GitOps alerts (ArgoCD takes over from here)
 kubectl apply -f argocd/application-dev.yaml
+kubectl apply -f argocd/application-alerts.yaml
 
 # 5. Install observability
 helm install monitoring prometheus-community/kube-prometheus-stack \
   --namespace monitoring -f observability/values-monitoring.yaml
-kubectl apply -f k8s/overlays/dev/alerts.yaml
 kubectl apply -f observability/dashboard-configmap.yaml
 
 # 6. Verify metrics are being scraped

@@ -76,11 +76,11 @@ A production-grade, security-by-design Kubernetes platform running on **Microsof
    - Continuous reconciliation via **Argo CD** (application `portfolio-app-dev`). The CI pipeline never touches the cluster directly with `kubectl`; it builds, scans, signs, and commits updated image tags to `k8s/overlays/dev/`, enforcing pull-based declarative synchronization.
    - **Current Verified Deployment**: Image `acrkubesentrydev.azurecr.io/portfolio-app:7a01e939` (digest `sha256:07eeecae39a70b91563a8608ce01c0aa64d1be8e6d3a39b855b89642e636d795`), synchronized at GitOps revision `aeee8c907cf53d81d5bce8ec6f586982760c519e` (`aeee8c9`).
    - **Autoscaling Configuration**: HPA is pinned to `minReplicas: 1, maxReplicas: 1` (target 70% CPU, 80% Memory) to strictly respect the 30-pod Azure CNI limit on `Standard_D2ads_v7` nodes.
-   - **Service & Ingress Topology**: The MCP servers are exposed via an authenticated NGINX Ingress at `https://mcp.20-19-153-146.nip.io` with Basic Auth and Let's Encrypt TLS. The portfolio application is intentionally exposed as an internal ClusterIP Service (`portfolio-app:80 -> 8080`) guarded by default-deny NetworkPolicies.
+   - **Service & Ingress Topology**: The Spring Boot portfolio application is accessible publicly over HTTPS at **`https://portfolio.20-19-153-146.nip.io`** with automated Let's Encrypt TLS certificates, backed by `portfolio-app:80` (ClusterIP). The MCP tools are independently exposed via authenticated Ingress at `https://mcp.20-19-153-146.nip.io` with Basic Auth.
 
 4. **Full-Stack Observability & CI Telemetry**:
    - Dedicated, tainted `monitoring` node pool running **Prometheus**, **Alertmanager**, and **Grafana**.
-   - **PrometheusRule & ServiceMonitor**: PrometheusRule `portfolio-app-alerts` is evaluated in the `monitoring` namespace; ServiceMonitor `portfolio-app` is deployed in `dev` and discovered cluster-wide via Prometheus `serviceMonitorNamespaceSelector: {}`.
+   - **PrometheusRule & ServiceMonitor**: PrometheusRule `portfolio-app-alerts` is managed declaratively via GitOps through Argo CD (`portfolio-alerts` application in `argocd/application-alerts.yaml`) in the `monitoring` namespace; ServiceMonitor `portfolio-app` is deployed in `dev` and discovered cluster-wide via Prometheus `serviceMonitorNamespaceSelector: {}`.
    - Custom Grafana dashboard (**Portfolio App - Overview**) tracking HTTP request rate, P95 response latency, container CPU/memory vs. limits, HPA replicas, and AI agent call telemetry.
    - **Prometheus Pushgateway** ingesting CI-time AI security review duration and success metrics (pushed as point-in-time event samples).
 

@@ -7,6 +7,7 @@ resources:
 - ../../base
 - ../../security/network-policies
 - servicemonitor.yaml
+- ingress.yaml
 
     # Image tag follows the commit SHA, aligned with the Kyverno
     # "disallow-latest-tag" policy for complete traceability.

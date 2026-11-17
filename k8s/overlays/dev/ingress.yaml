@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: portfolio-app
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - portfolio.20-19-153-146.nip.io
+      secretName: portfolio-app-tls
+  rules:
+    - host: portfolio.20-19-153-146.nip.io
+      http:
+        paths:
+          - path: /
+            pathType: Exact
+            backend:
+              service:
+                name: portfolio-app
+                port:
+                  number: 80
