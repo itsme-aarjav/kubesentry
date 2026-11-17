@@ -23,7 +23,12 @@ An incident is reported in the dev namespace. The application portfolio-app seem
 
 ## 2. Model Output & Verified Evidence
 
-### Root Cause
+### Root Cause Analysis (Agent Diagnostic Hypothesis)
+
+> [!NOTE] Diagnostic Hypothesis vs. Live Cluster Verification
+> During this incident investigation simulation, the Foundry Agent hypothesized that external traffic degradation could stem from an upstream Load Balancer or Ingress health probe targeting an endpoint returning HTTP 404 while internal pods remain healthy.
+> **Verified Live AKS State**: The Azure Load Balancer health probe in `MC_rg-kubesentry-dev_aks-kubesentry-dev_francecentral` is configured to probe `/healthz` on port 31242 (`ingress-nginx-controller`), which is confirmed healthy (HTTP 200). The agent's deduction is preserved below as authentic evidence of AI-driven diagnostic hypothesis formulation and runbook retrieval.
+
 The external load‑balancer / Ingress health probe is probing a path that the Ingress/NGINX returns 404 for (health-probe → unhealthy), so the cloud load balancer marks the backend as unhealthy and drops external traffic — while the portfolio-app Pod and Service are healthy inside the cluster.
 
 ### Evidence

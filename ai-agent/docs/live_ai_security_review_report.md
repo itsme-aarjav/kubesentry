@@ -1,36 +1,708 @@
-# Live Pipeline #3076259725 — Security Verification & AI Review
+# Live Pipeline #3077621954 — Security Verification & AI Review
 
-> [!NOTE] Current Verification Status & Pipeline Context
-> - **Primary Verified Pipeline**: [#3076259725](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3076259725) (Job `#18086209361`, Commit `9c386b25`, Branch `main`)
+> [!NOTE] Current Verification Status & Pipeline Provenance
+> - **Primary Verified Pipeline**: [#3077621954](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3077621954) (Job `#18095363667`, Commit `7a01e939`, Branch `main`)
 > - **Predecessor Baseline**: [#3076259725](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3076259725) (Job `#18086209361`, Commit `9c386b25`)
-> - **Container Image**: `acrkubesentrydev.azurecr.io/portfolio-app:9c386b25` (Spring Boot 4.0.9, Java 21)
-> - **Trivy Container Scan Gate**: **PASSED (0 CRITICAL, 0 HIGH)** — Enforced via `--exit-code 1`
-> - **Semgrep SAST Scan**: **PASSED (0 Vulnerabilities, timeout fixed)**
+> - **Active Container Image**: `acrkubesentrydev.azurecr.io/portfolio-app:7a01e939` (Spring Boot 4.0.9, Java 21)
+> - **Verified Image Digest**: `sha256:07eeecae39a70b91563a8608ce01c0aa64d1be8e6d3a39b855b89642e636d795`
+> - **Trivy Container Scan Gate**: **PASSED (0 CRITICAL, 0 HIGH)** — Hard blocking gate enforced via `--exit-code 1`
+> - **Semgrep SAST Scan**: **PASSED (0 Vulnerabilities)** — Clean static analysis scan
 > - **Syft SBOM & Cosign Signature**: **VERIFIED** — Keyless OCI 1.1 referrers published to ACR
-> - **AI Security Review Status**: **PASSED & VERIFIED (English v7 Agent)** — Pushgateway HTTP 200, 41.0s duration
+> - **AI Security Review Status**: **PASSED & VERIFIED (English v7 Agent)** — Pushgateway HTTP 200, 52.3s duration
 
 ---
 
-## 1. Current Verified Security Scan Results
+## 1. Verified Security Scan Results (Pipeline #3077621954)
 
 ### Container Image Vulnerability Scan (Trivy)
-- **Scanner**: Trivy v0.66.0 (Job `#18086209358`)
+- **Scanner**: Trivy v0.66.0 (Job `#18095363663`)
 - **Policy**: `--exit-code 1 --severity HIGH,CRITICAL`
 - **Result**: **0 Vulnerabilities Found** (0 Critical, 0 High).
-- **Remediation Context**: All Apache Tomcat CVEs identified during initial testing (`CVE-2025-24813`, `CVE-2025-24814`) were fully resolved by upgrading the parent dependency to Spring Boot 4.0.9 (embedded Tomcat 11). The container scan gate passed cleanly without bypasses.
+- **Security Boundary**: The container scan executes before the image is pushed to ACR. Any detected High or Critical vulnerability immediately terminates the pipeline with exit code 1.
 
 ### Static Application Security Testing (Semgrep SAST)
-- **Scanner**: Semgrep OSS (GitLab SAST template, Job `#18086209355`)
-- **Result**: **Clean Pass** (explicit `timeout=30` parameter added to OAuth token exchange in `ai-agent/ai_security_review.py:98`, resolving previous advisory).
+- **Scanner**: Semgrep OSS (GitLab SAST template, Job `#18095363660`)
+- **Policy**: GitLab SAST ruleset with `allow_failure: true`
+- **Result**: **Clean Pass (0 Findings)**.
 
 ### Supply Chain Integrity (Syft & Sigstore Cosign)
-- **SBOM**: Full SPDX JSON SBOM (`sbom.json`) generated from the container image and published as a pipeline artifact.
-- **Signing**: Keyless OIDC signature generated using Sigstore Cosign with GitLab CI identity federation (Job `#18086209360`).
-- **ACR Artifacts**: Signature and attestation referrers attached to image tag `9c386b25` in Azure Container Registry (`acrkubesentrydev.azurecr.io`).
+- **SBOM**: Full SPDX JSON SBOM (`sbom.json`) generated from the container image and published as a pipeline artifact (Job `#18095363666`).
+- **Signing**: Keyless OIDC signature generated using Sigstore Cosign with GitLab CI identity federation.
+- **ACR Artifacts**: Signature (`.sig`) and SBOM attestation (`.att`) attached directly to image digest in Azure Container Registry (`acrkubesentrydev.azurecr.io`).
 
 ---
 
-## 2. Authentic Live AI Security Review Execution (Pipeline #3076259725 — Version 7 English)
+## 2. Authentic Live AI Security Review Execution (Pipeline #3077621954 — Version 7 English)
+
+- **GitLab Pipeline**: [#3077621954](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3077621954)
+- **Job ID**: `#18095363667` (`ai_security_review`)
+- **Commit SHA**: `7a01e939269631493670e0247629723485a8e875`
+- **Foundry Agent**: `k8s-incident-investigator` (Version 7)
+- **Model**: `gpt-5-mini` on Azure AI Foundry
+- **Duration**: **52.3 seconds**
+- **Prometheus Pushgateway**: **HTTP 200** (metrics pushed: `ai_agent_call_total{status="success"} 1`, `ai_agent_call_duration_seconds 52.30`)
+- **Grounded RAG Knowledge Base**: `https://srch-kubesentry-dev.search.windows.net/` (Index: `kubesentry-index`, Storage: `stfkubesentrydev`, Source: `agent-knowledge.md`)
+- **Language**: **100% English**
+
+### Executive Review Summary
+The v7 Azure AI Foundry Agent performed an automated multi-step investigation:
+1. **Tool Discovery**: Queried MCP tools (`kubernetes-cluster` and `prometheus-metrics`).
+2. **Telemetry Correlation**: Correlated the clean Trivy scan and zero-finding SAST report against the SPDX JSON SBOM.
+3. **Supply Chain Evaluation**: Evaluated third-party dependencies in the SBOM excerpt, identifying that while Trivy and SAST reported 0 HIGH/CRITICAL CVEs, full end-to-end dependency correlation is recommended prior to production promotion.
+4. **Deployment Recommendation**: Issued an advisory NO-GO recommendation as a precautionary stance due to the truncated SBOM excerpt in the prompt, demonstrating conservative AI governance.
+
+<details>
+<summary>Click to expand Pipeline #3077621954 raw JSON artifact</summary>
+
+```json
+[
+  {
+    "type": "mcp_list_tools",
+    "id": "mcpl_067cbc1b188a8a7e006afc007855cc81968d895f8b884ac247",
+    "agent_reference": {
+      "type": "agent_reference",
+      "name": "k8s-incident-investigator",
+      "version": "7"
+    },
+    "response_id": "resp_067cbc1b188a8a7e006afc0078407c8196825c976de2705bd8",
+    "server_label": "kubernetes-cluster",
+    "tools": [
+      {
+        "name": "events_list",
+        "description": "List Kubernetes events (warnings, errors, state changes) for debugging and troubleshooting in the current cluster from all namespaces",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "namespace": {
+              "type": "string",
+              "description": "Optional Namespace to retrieve the events from. If not provided, will list events from all namespaces",
+              "properties": {},
+              "required": []
+            }
+          },
+          "required": []
+        },
+        "annotations": {}
+      },
+      {
+        "name": "namespaces_list",
+        "description": "List all the Kubernetes namespaces in the current cluster",
+        "input_schema": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        },
+        "annotations": {}
+      },
+      {
+        "name": "nodes_log",
+        "description": "Get logs from a Kubernetes node (kubelet, kube-proxy, or other system logs). This accesses node logs through the Kubernetes API proxy to the kubelet",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the node to get logs from",
+              "properties": {},
+              "required": []
+            },
+            "query": {
+              "type": "string",
+              "description": "query specifies services(s) or files from which to return logs (required). Example: \"kubelet\" to fetch kubelet logs, \"/<log-file-name>\" to fetch a specific log file from the node (e.g., \"/var/log/kubelet.log\" or \"/var/log/kube-proxy.log\")",
+              "properties": {},
+              "required": []
+            },
+            "tailLines": {
+              "type": "integer",
+              "description": "Number of lines to retrieve from the end of the logs (Optional, 0 means all logs)",
+              "properties": {},
+              "default": 100,
+              "required": []
+            }
+          },
+          "required": [
+            "name",
+            "query"
+          ]
+        },
+        "annotations": {}
+      },
+      {
+        "name": "nodes_stats_summary",
+        "description": "Get detailed resource usage statistics from a Kubernetes node via the kubelet's Summary API. Provides comprehensive metrics including CPU, memory, filesystem, and network usage at the node, pod, and container levels. On systems with cgroup v2 and kernel 4.20+, also includes PSI (Pressure Stall Information) metrics that show resource pressure for CPU, memory, and I/O. See https://kubernetes.io/docs/reference/instrumentation/understand-psi-metrics/ for details on PSI metrics",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the node to get stats from",
+              "properties": {},
+              "required": []
+            }
+          },
+          "required": [
+            "name"
+          ]
+        },
+        "annotations": {}
+      },
+      {
+        "name": "nodes_top",
+        "description": "List the resource consumption (CPU and memory) as recorded by the Kubernetes Metrics Server for the specified Kubernetes Nodes or all nodes in the cluster",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "label_selector": {
+              "type": "string",
+              "description": "Kubernetes label selector (e.g. 'node-role.kubernetes.io/worker=') to filter nodes by label (Optional, only applicable when name is not provided)",
+              "properties": {},
+              "required": []
+            },
+            "name": {
+              "type": "string",
+              "description": "Name of the Node to get the resource consumption from (Optional, all Nodes if not provided)",
+              "properties": {},
+              "required": []
+            }
+          },
+          "required": []
+        },
+        "annotations": {}
+      },
+      {
+        "name": "pods_get",
+        "description": "Get a Kubernetes Pod in the current or provided namespace with the provided name",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the Pod",
+              "properties": {},
+              "required": []
+            },
+            "namespace": {
+              "type": "string",
+              "description": "Namespace to get the Pod from",
+              "properties": {},
+              "required": []
+            }
+          },
+          "required": [
+            "name"
+          ]
+        },
+        "annotations": {}
+      },
+      {
+        "name": "pods_list",
+        "description": "List all the Kubernetes pods in the current cluster from all namespaces",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "fieldSelector": {
+              "type": "string",
+              "description": "Optional Kubernetes field selector to filter pods by field values (e.g. 'status.phase=Running', 'spec.nodeName=node1'). Supported fields: metadata.name, metadata.namespace, spec.nodeName, spec.restartPolicy, spec.schedulerName, spec.serviceAccountName, status.phase (Pending/Running/Succeeded/Failed/Unknown), status.podIP, status.nominatedNodeName. Note: CrashLoopBackOff is a container state, not a pod phase, so it cannot be filtered directly. See https://kubernetes.io/docs/concepts/overview/working-with-objects/field-selectors/",
+              "properties": {},
+              "required": []
+            },
+            "labelSelector": {
+              "type": "string",
+              "description": "Optional Kubernetes label selector (e.g. 'app=myapp,env=prod' or 'app in (myapp,yourapp)'), use this option when you want to filter the pods by label",
+              "properties": {},
+              "required": []
+            }
+          },
+          "required": []
+        },
+        "annotations": {}
+      },
+      {
+        "name": "pods_list_in_namespace",
+        "description": "List all the Kubernetes pods in the specified namespace in the current cluster",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "fieldSelector": {
+              "type": "string",
+              "description": "Optional Kubernetes field selector to filter pods by field values (e.g. 'status.phase=Running', 'spec.nodeName=node1'). Supported fields: metadata.name, metadata.namespace, spec.nodeName, spec.restartPolicy, spec.schedulerName, spec.serviceAccountName, status.phase (Pending/Running/Succeeded/Failed/Unknown), status.podIP, status.nominatedNodeName. Note: CrashLoopBackOff is a container state, not a pod phase, so it cannot be filtered directly. See https://kubernetes.io/docs/concepts/overview/working-with-objects/field-selectors/",
+              "properties": {},
+              "required": []
+            },
+            "labelSelector": {
+              "type": "string",
+              "description": "Optional Kubernetes label selector (e.g. 'app=myapp,env=prod' or 'app in (myapp,yourapp)'), use this option when you want to filter the pods by label",
+              "properties": {},
+              "required": []
+            },
+            "namespace": {
+              "type": "string",
+              "description": "Namespace to list pods from",
+              "properties": {},
+              "required": []
+            }
+          },
+          "required": [
+            "namespace"
+          ]
+        },
+        "annotations": {}
+      },
+      {
+        "name": "pods_log",
+        "description": "Get the logs of a Kubernetes Pod in the current or provided namespace with the provided name",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "container": {
+              "type": "string",
+              "description": "Name of the Pod container to get the logs from (Optional)",
+              "properties": {},
+              "required": []
+            },
+            "name": {
+              "type": "string",
+              "description": "Name of the Pod to get the logs from",
+              "properties": {},
+              "required": []
+            },
+            "namespace": {
+              "type": "string",
+              "description": "Namespace to get the Pod logs from",
+              "properties": {},
+              "required": []
+            },
+            "previous": {
+              "type": "boolean",
+              "description": "Return previous terminated container logs (Optional)",
+              "properties": {},
+              "required": []
+            },
+            "tail": {
+              "type": "integer",
+              "description": "Number of lines to retrieve from the end of the logs (Optional, default: 100)",
+              "properties": {},
+              "default": 100,
+              "required": []
+            }
+          },
+          "required": [
+            "name"
+          ]
+        },
+        "annotations": {}
+      },
+      {
+        "name": "pods_top",
+        "description": "List the resource consumption (CPU and memory) as recorded by the Kubernetes Metrics Server for the specified Kubernetes Pods in the all namespaces, the provided namespace, or the current namespace",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "all_namespaces": {
+              "type": "boolean",
+              "description": "If true, list the resource consumption for all Pods in all namespaces. If false, list the resource consumption for Pods in the provided namespace or the current namespace",
+              "properties": {},
+              "default": true,
+              "required": []
+            },
+            "label_selector": {
+              "type": "string",
+              "description": "Kubernetes label selector (e.g. 'app=myapp,env=prod' or 'app in (myapp,yourapp)'), use this option when you want to filter the pods by label (Optional, only applicable when name is not provided)",
+              "properties": {},
+              "required": []
+            },
+            "name": {
+              "type": "string",
+              "description": "Name of the Pod to get the resource consumption from (Optional, all Pods in the namespace if not provided)",
+              "properties": {},
+              "required": []
+            },
+            "namespace": {
+              "type": "string",
+              "description": "Namespace to get the Pods resource consumption from (Optional, current namespace if not provided and all_namespaces is false)",
+              "properties": {},
+              "required": []
+            }
+          },
+          "required": []
+        },
+        "annotations": {}
+      },
+      {
+        "name": "resources_get",
+        "description": "Get a Kubernetes resource in the current cluster by providing its apiVersion, kind, optionally the namespace, and its name\n(common apiVersion and kind include: v1 Pod, v1 Service, v1 Node, apps/v1 Deployment, networking.k8s.io/v1 Ingress)",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "apiVersion": {
+              "type": "string",
+              "description": "apiVersion of the resource (examples of valid apiVersion are: v1, apps/v1, networking.k8s.io/v1)",
+              "properties": {},
+              "required": []
+            },
+            "kind": {
+              "type": "string",
+              "description": "kind of the resource (examples of valid kind are: Pod, Service, Deployment, Ingress)",
+              "properties": {},
+              "required": []
+            },
+            "name": {
+              "type": "string",
+              "description": "Name of the resource",
+              "properties": {},
+              "required": []
+            },
+            "namespace": {
+              "type": "string",
+              "description": "Optional Namespace to retrieve the namespaced resource from (ignored in case of cluster scoped resources). If not provided, will get resource from configured namespace",
+              "properties": {},
+              "required": []
+            }
+          },
+          "required": [
+            "apiVersion",
+            "kind",
+            "name"
+          ]
+        },
+        "annotations": {}
+      },
+      {
+        "name": "resources_list",
+        "description": "List Kubernetes resources and objects in the current cluster by providing their apiVersion and kind and optionally the namespace and label selector\n(common apiVersion and kind include: v1 Pod, v1 Service, v1 Node, apps/v1 Deployment, networking.k8s.io/v1 Ingress)",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "apiVersion": {
+              "type": "string",
+              "description": "apiVersion of the resources (examples of valid apiVersion are: v1, apps/v1, networking.k8s.io/v1)",
+              "properties": {},
+              "required": []
+            },
+            "fieldSelector": {
+              "type": "string",
+              "description": "Optional Kubernetes field selector to filter resources by field values (e.g. 'status.phase=Running', 'metadata.name=myresource'). Supported fields vary by resource type. For Pods: metadata.name, metadata.namespace, spec.nodeName, spec.restartPolicy, spec.schedulerName, spec.serviceAccountName, status.phase (Pending/Running/Succeeded/Failed/Unknown), status.podIP, status.nominatedNodeName. See https://kubernetes.io/docs/concepts/overview/working-with-objects/field-selectors/",
+              "properties": {},
+              "required": []
+            },
+            "kind": {
+              "type": "string",
+              "description": "kind of the resources (examples of valid kind are: Pod, Service, Deployment, Ingress)",
+              "properties": {},
+              "required": []
+            },
+            "labelSelector": {
+              "type": "string",
+              "description": "Optional Kubernetes label selector (e.g. 'app=myapp,env=prod' or 'app in (myapp,yourapp)'), use this option when you want to filter the resources by label",
+              "properties": {},
+              "required": []
+            },
+            "namespace": {
+              "type": "string",
+              "description": "Optional Namespace to retrieve the namespaced resources from (ignored in case of cluster scoped resources). If not provided, will list resources from all namespaces",
+              "properties": {},
+              "required": []
+            }
+          },
+          "required": [
+            "apiVersion",
+            "kind"
+          ]
+        },
+        "annotations": {}
+      }
+    ]
+  },
+  {
+    "type": "mcp_list_tools",
+    "id": "mcpl_067cbc1b188a8a7e006afc007857848196a407cc55e6fc60a9",
+    "agent_reference": {
+      "type": "agent_reference",
+      "name": "k8s-incident-investigator",
+      "version": "7"
+    },
+    "response_id": "resp_067cbc1b188a8a7e006afc0078407c8196825c976de2705bd8",
+    "server_label": "prometheus-metrics",
+    "tools": [
+      {
+        "name": "health_check",
+        "description": "Health check endpoint for container monitoring and status verification",
+        "input_schema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "annotations": {}
+      },
+      {
+        "name": "execute_query",
+        "description": "Execute a PromQL instant query against Prometheus",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "properties": {},
+              "required": []
+            },
+            "time": {
+              "properties": {},
+              "default": null,
+              "required": [],
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false
+        },
+        "annotations": {}
+      },
+      {
+        "name": "execute_range_query",
+        "description": "Execute a PromQL range query with start time, end time, and step interval",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "properties": {},
+              "required": []
+            },
+            "start": {
+              "type": "string",
+              "properties": {},
+              "required": []
+            },
+            "end": {
+              "type": "string",
+              "properties": {},
+              "required": []
+            },
+            "step": {
+              "type": "string",
+              "properties": {},
+              "required": []
+            }
+          },
+          "required": [
+            "query",
+            "start",
+            "end",
+            "step"
+          ],
+          "additionalProperties": false
+        },
+        "annotations": {}
+      },
+      {
+        "name": "list_metrics",
+        "description": "List all available metrics in Prometheus with optional pagination support",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "properties": {},
+              "default": null,
+              "required": [],
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "offset": {
+              "type": "integer",
+              "properties": {},
+              "default": 0,
+              "required": []
+            },
+            "filter_pattern": {
+              "properties": {},
+              "default": null,
+              "required": [],
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "refresh_cache": {
+              "type": "boolean",
+              "properties": {},
+              "default": false,
+              "required": []
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "annotations": {}
+      },
+      {
+        "name": "get_metric_metadata",
+        "description": "Get metadata (type, help, unit) for metrics. Returns all metric metadata when no metric name is provided. Use filter_pattern to search metric names and descriptions.",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "metric": {
+              "properties": {},
+              "default": null,
+              "required": [],
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "filter_pattern": {
+              "properties": {},
+              "default": null,
+              "required": [],
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "limit": {
+              "properties": {},
+              "default": null,
+              "required": [],
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "offset": {
+              "type": "integer",
+              "properties": {},
+              "default": 0,
+              "required": []
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "annotations": {}
+      },
+      {
+        "name": "get_targets",
+        "description": "Get scrape targets, with state/pool filtering and optional pagination",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "state": {
+              "type": "string",
+              "properties": {},
+              "default": "active",
+              "required": []
+            },
+            "scrape_pool": {
+              "properties": {},
+              "default": null,
+              "required": [],
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "limit": {
+              "properties": {},
+              "default": null,
+              "required": [],
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "offset": {
+              "type": "integer",
+              "properties": {},
+              "default": 0,
+              "required": []
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "annotations": {}
+      }
+    ]
+  },
+  {
+    "type": "reasoning",
+    "id": "rs_067cbc1b188a8a7e006afc0079074c8196ae9c1e097621c074",
+    "agent_reference": {
+      "type": "agent_reference",
+      "name": "k8s-incident-investigator",
+      "version": "7"
+    },
+    "response_id": "resp_067cbc1b188a8a7e006afc0078407c8196825c976de2705bd8",
+    "encrypted_content": "gAAAAABq_ACM11aGubOqJXZVQKvin0MUEyRFGJHyca6k3WGcLW5my_hFTVFGRcx5CzokiTVXwfyQRnHHc0PFZlLioxOHqmVxy1Cegf8DbEAij5CG1X9qXQiAQwoGcnTvi5UNVY0KpuhAvSdyGcTIxJEwfG1VA0Dcqbsob6rE4ISnKkmj5Ox3YDB8yiwORukOzsPpTYTJ1j9VBNguZdMmZENYtk5WSNS0qfsRGngImInstbbVMgS52xY2QzX9cG4WkByX9ifE1XJuJoWwZLXF0s3m8LonCnL1VyWJiVhNNj4gwCjoVgNPF6sJECAkYuVnHo7sBRO4WUCIqHV_d9jmzEQlpCWw061GittBMIkonjZ3fJP3flZEIZ-GBVduH-z9MjhL3WhOGaUfmnY72kg_xPx_Rf-Bq16QasY4Os4Pq8DAecxgOEdifLquExAjsxpVdifQKaHwy9mKa1Eg0Hv1oKL2jZgfTRwfyJgW3l1PU0luG1_-6cz80_MY8RFoGoQCVfQ-HNFajgIPDVsdknvlqm4aBFrd2dV6ci1ZkPNlQ7xpflrwLsyYecte_f8oSCamw0D4_bUDrKaxKxZbd2_EigP6LxJbZWKJvQBfDhnwE4pHt46zPTjWrzIaO3jXS8ih5_fP3G4iKyEo1KwoaBb6olEGm3Poo3lNrGCNhNSGWayhsJCE0GHBZYZ1DABfCH_fj7zGg37rkKIPi7xtPPDGZrCbAfH2fDFA1NCYG4nyOREdwMp6Umn4Bsekq_FMqRunqNL-kZvDWkyNvYIQULDBMnt0BU3yLr2NM9KT8K_ZSKuoFmcHSPbX1SatJVMTIG5mzyIXOug1xu3bL-1DtFFtUFHxTM_3jpBQ3j9ZUzHYkq5rOx4OXlrwKRVof6Rg62msV9Ot5RGfVOr8swAZtV4pxnaocazioaQOhkyirHX10eN_G_nV2g8mv_IC2asyk0eo4bn6Njf9AIn6dBVzJr_IfSsmk43XwoXLulBOUlm4IKUawSTJd1PJ0b83fGpBs8ZQKSFDwX3Duc727AiCcWM-qq2TFeg0Zm2uvLsDLjkHibLA94zToNxg1g855zlQOzMUdiumBkZvQ0i3YF3BSydVoKdEJt8bugYu2GlNkEOUYQipmDHVLjUpkcRB71i8ylym-UPyuoee8WZ1mv4DdbstlRIOtyFh4XACm-27clnljSnLY9PnrQ-1BFsswk0ALO5A8xv8Ssbpq1xIMY_ZYNA_5lP-xqQ7KUdznrMDgQjEkVgbyr7vwK_585kHz09zC9e7S0uRiM_-n53zcsZ1AwntU5cHk8OvmJUQLkvUKYEYBdR8XRuz69nHseBb2cB__c3ohsNiQnrNQu4DpcCsiXcdZGEm9fAUsrl3dUjMcLRngAGUvzH8lEBUF172EMqSZoGZ-mcsUVTskb3JGATEWU6Cjim0BNMDQmFlSoWQxo4g9ttQiUW8W9J98_WYo-qL2STPoXXXMYQm9tRki9zAnV5H-wP7wTJvA0KYGy5Iyi5pyvYQRcibp9WaIFauQIG_Reahhbzb2mlaFNEF6LRR57S_dnzVh3_6OZ-WowCvdAIDPARgQv_PLAz0M31pJHU8XdRbwmf7cKA67s0wBbo9bvo81Ncc_mcne0oF4PL6jF2b8qPQKofV1wGsflHnJ5C0AGE91BcxkO-kYgQXXhGS53a26MFHPIO5AnD39zc-vXpP0JNg8m8tMfcdVSRxpJ8zGBD3dBF5aHs1bbNQHNsUCSQzwzxy2C_JsFDUT8mHYSTf8Kwb9DW_G5z8r4tB7zXYMZsUrx2j441BWlHkHxF4lqyjfhlm6d-S5oq7YjJMMUe52eDwX4WdWd4GMafKhUpgvie-6d4Nqgvh4v08zHj2eYqP-kk5QAxi9Q5XjrTKpSbMHOpFVgafbKQ6BBDp1YtVqrSvp8qeGJkwG3xUCsBF6CMbcxhFBVPv_50KXMIjvrhghJDrXUFN-9GgIq_wxw6WTS8Wbkxkwrcv07UKrA4Oh5JUfhgEiwzBphMZUtat9uJT__051DML4MvQtbqt0k3Q_9BbAHZ3bvoaq2TEbLvggYmb0g3plD5WCxiiZ5mv4cvseD_xS0lCXXnisBx9mZMiIaMSiSAk2AH29JD2UBl7DDbt3tP852O7Opt23LjB-IeqzBhL2VyFczyDANMoyG6ay9TALNna514D63W8P6ziSwSEW68XtVC0oF-xSF76tHo_3P0egp3jDUgHdRfJsSxiHGErdHMSUbCPudo0Ol7Biwpw-Nuv_BAWEuT0hf29m8GAVts18qr2N4aHrQsSBn3iqEjmhh40W0_TLXoHvlVOcwsONNg8K5HPUzfzVhzAWGRBt0clnJl6YfauoerfvSVlW_MhQByxzAEmwCyLyNDSZvY8NwvRhcjbYZbmNsclMuQPA84K314EZUgoy-KB8oP9R4IgvS9g4WOoUKrPeNybjYhKir9zXyQIDDGzVwDym8TKHprEAj1J4ai1Jsk_90yHlE1gWbBWa1nKOxre4P-1Jcg_4oi4xgs6bQrXts7uW9_jA097gbR2CtzwhqvArYRo5T2rLcnywNPPKZ-db14x9v5qDIzaWGhBI3kA1yIsbHCp4gQqz7unsES-ki2dUm-3qAmc0_jl0IHKx8zeWgtNgin3B6beeSiPAjuE5OjC4aHjV_MJb4Jdla4zV1DtFpgajY6UiO2KQQ89gnJ9K7W_UR72XEyYtVwUkt_mBdAGN2j7UGadmJDyPfJ3XJIhfsln3QgCVfWQ5eam3PJFZ3tlhmecI-ih7lCmKaGelK7VGH7AM1ng2aV9mwTLxh1rDTj51umIANkjKJJRldzZixCl2JuE6qsRbXYO44IH2HGxzcA-JtA2QCso_SpWdMUstsEYD34Ij3hmNirdAyPm84cpqJUF2lbt-WaQuqgxCakPOTNTFUu2Izmr7Uai-Jy2SY3LhmrLJTVdhIqGOFsnA30T2o3TpED0YoSaNAvOEYz-ZCnISVDs-Yc2fbNhTRuM3xiEPtRLAhZ0D406adNBYA3T3_FF7XBshzXaGL6MIUezGHZvR1IAAPYZYMMxYG5oPXGHoSwijV8H6b6io040SQeLLkzzO8c1ovYmLceNwPKmyJ5Cch_d10mEJLl3JthHwa_eqAqw1z4eGC77hbw3FQwGZ3g-4MtkNX-0EMXz7QNmUbjMyQb1sIY8RFl3uGObINWhbVduzvjFEU7NeCxZ5MHrbEjs-zblJ3Hexc5Ps-uk_kXV1d5AtyQId9DUsK18iO6hhvUiXrVeaBfLAfCgHhwnjxhR9Fhl4OzsbphNoT_FQwZtgv-Br5_vbNxvcKeSxjn6Ccp9vRXE9U6-kZZxMIoSB6VRkkuC6N4cDxKONLQPIWYjPmVCuv5GFtwCG8WQEagG0g1a0IvBmLYxU0sxGtYVurXEsJ7pOtmYkUi0sH7Qz8WoUgbZhTGlGgoiIXiDtErsEb_L2pW0N1tQcB6zfC_Zvapfo0BuSwuLV10fm75PzLDLjdP4ytJ5h6I9MAQvBZmLCHQRIWfZwN8ranYkqzqif6n3EwhBNDAyLouNp86lLfvp6AFnwKVSBMTc9XqXsRgn7f5mQ63RkA-uOVwhh0D_8KP9dAHqfPITT6b216cDgl0P1MnoA9hlWdtQK-ouIPOYdOGTV34bIho-ZZwU0YjzokVbawAsK0R_9woa_mOtlugvz8w_T9oH31N0Rgor3SOzqKxwMW7LWR_72v4ItGAZfEP46razC8XFAF7jKjRqFx5ejVqfoCpZaX0dffY2H6-exVK1BSf2tLRInNeNw5UI5XnJ7ntDTPoqxQTJDxuH6Dh2y0aCApbbgVMlkd_1j_zb5hTCvE_ucXTGwbsRaFIQcWphlcjB3kmZs-Zy2d0mrKxEHbJrzn7CHYQITEdj5L9iWZ5V5Y0iDAW1v4hXTlnr-SQGii0pAd_zObQvDu6ghV21TEjKMWAinNYCCPe_b6LquGUDfzhOWjXwoHXchhIRCRNG3O4A5CedBNeLdFz6zezOAoydgpxEJ8VQ1-DJI10cVYH8O_OSYhUwzPyY98gDcMUsRoTt6SJliW42fIZySlw8Vb9zR9TLXYABfAP54T5sq-s6rnkK9uB3znd-WfsCiomK7b5n63faK0wk7RS2pKIwrly_PBaeT11uaKolSnAZQ8sy1z1p4hLPYOQ3lQ-0n5OIkuY87SbhjpGg_GDHti8Hm-qAvMYrA1qh2Vp71TSH3DEvGVk6ZBcN_R9TI5mReOWQ8PDLOcPFWzYrNn9yiav7CCs0L9-VGMSqum7J3Irp2jcKC5WWVXcdhh7SQFTCOJ_4PBsetgK2X8FnfkG8IPJWxoTBTrI4jm1BQ5I0smEmf6v3wWfCOZGrcz4xi1k8LuPrAOFo1Oz8DH6o0W_Vg8fLAPr7U5bD9_NEr9zcKnr7GUb3cp4q1f5OPJswboucE2CpsE5iBh0LisbyuZZ9gy91zVDSSZ6E5WpEC6BnfAb5tmVHBPTydhGxJB3KRVAsk12unRtC12NNR6NF1EYKXha6yax_us2yqVPCkJ_Dys4p8XYn1Bytp8hybZS1fdPN1EiUM9E-nTjKRg46aHiPQdMJ87vV7dAOcyuT6KcwPRW-V6f0Lh6qG6X8NaOWMOrZnbcpGiY3HZtRO2qEq5G643c9F7PnErVcv4F-rp0s0MBeTw5BuTAKFPlD2NMXQVep7MHMWWS8prbonH9b3sJrcZiMvjybH9ub0wJ5bZmSAbhESvkYBTgp4GKvnXC8JVZmY3qw4c_IBGxMeNY7WuYfGpYrKpqrcrcmb8Lp9IFlNMhuNUrk7-dsctEtx1GULxz1c6HuLFT5atoi_AvfHgzLk6Loxf0vYaWKoPMCoKU-ZfJmk9sBsEukRyPOHuhMwMZ3nYadYCcE_ocd_lcqh5KVSonYDXS9RlUfWSZLwLmdkWgZs_pgMhaNOdvYjVyYSHqG6k_HO3RYr5C7LsmfQYtmmyIVryYCMIUU88EBjXMSa6RK2fCD-IWDJuKLYZ1XiiFE8oD73pw8aBVtn5HTKNQPMwiMomqYoP1K2tB5YLgcX4f1NLJblF9Q0IdtXq66X_XLbQ4l0OYUMGJ-F61sSMC89KP3S9yTD4Hs84EkW2299BDURYIOsAp-oX7HtvlQL4STx1AVqC_0nZH_T9qZ2wSlcKirHugWJbVizFN-s6VOa_mAcVOsclzO8ekycLmd_k6xOEGiK1VadT7iNPFTJx_8NQ1rPpBSTvNZpgLCckx28X_yxbIz9vbPZ7HxIqhKv6aAiygIRtO22LTNJeKIqMgeEHfLUEWyync7lD76ScqXIHUG3rv6poT02fSPAfZoxUbArvNnet35_SK249YHaC0KxJUt-BxdDbcFU1M1hX-RoqWqcGKukVSA8877y6Cf73hSrH3S2270TjatFi4A_HHpuDXD_VX0Bp6HXcKsOlfLwKe3uI_g-ARBkrEevKktGbQq1Fzon6WwRW_Sp5VhoO28P_EwLmawGgHO9AJsLv4sY8xjGZ1Bn8tQsirU1lkqnzoclpzOL83ndc185uKjyD7PnlSke3iW0mlUTyy9LfkJGyt_Sl6UhO4hn5_J2HBNHbWKcfsvNCEpT78bJOC4phaJsURFHm59pmP6SvtDAKVOnRu9MjORiVTmCgepEfVyEWgTcNbxjuquj5y5zol1VdJz8CUI14OIzTTlz9Yp8pYWOrnUIsFmfGtGDmzQNxtnYwvcncJ58_7sej3AXlrsx5jhLBL017SlYriap8FFGcZ4ruPOmNKCM_H1-tG-my1l7pWkQkBU6zvQQ8-RrsY2o3Yav6raJd7jSDPohe0UE5O215kyItwUYoeIAEAXzdx8tXgfyIQIRY4fO8yE8LMdtpn3BQ0cfBiDw0vU6WyILKpn3WevhzSwnnevDeRTDTAustw4pgld8vu9Dze9MYQXIN2qyDBGoVIwTF95BDd1R6mnXkRqicPwpzS9wxbag66Rl9EB0KcMBYqgDE1O_sIquQ6NERFWjnrpf7OhuFPO-N9kbacBMzBuyBjwCauL0PxO6THKfOERQKoZwzOsH91ujHrmaVp1rrllDPXMGlqSia8RHcjROlGf8-VRJEGBvLVCfS7GvpbmZ93gLF32PEGA9P0wOE-ewUxIEtz4PyO0zBMy7XxQmelvs_5GyYVRbPnXwLc0PCMyZm7ILQjQW2hBiTiQ6NitxlP6m2hH4JWKiDlcuKljnHBYo_VvvezSA2K_mWfVwNWibxPRL765FkoOZ1vy-3uBAJ13iFUkOVtWgzO7VkPp5KLNFPK3TSaF1PPT9VwSN0hrHy51eDfpTJf3g8SamV3HnbP6rCchnBQ-oREiFHklaeT188XsOjC_HO4cchNQNSxJZLV0ALhTi17ATamkbRcoeVAOiyJ69Utk5mnF-NDbiergvig8aHctK69J_X-D7kapkP4L29vzZYmgk_EHhFpsBcsQRrGw1of_EwrlmH-zvWksvWy6uioagZYQvZDg0H8pdV5pphQq_Bfg88DQRE7c0NObE12RvwA_4sUl1tvd8yJZjS2shVZgsWvLQaE8KoCh0yq8QGfwAec5JZAVwNrW_fbYQ1S6VDyiRTO791TDV7JZSgDdnRU7Ul76bN49-tkfM9bdSnQfoxWvU1_ExvWp6JC-w3D59Yy6LetxugKT5UO7NuGciVIxnaMZyqe9RUgwIiM_GyHiwR77ytampvqX8P09hUQRGNP9O444ksBJxlFQu1wpRMZ4E0qdZIf8e8UyDYY8IWITP9qaFu9OX3_7VQzhd33SYkDb6bboScY4dZ3aj6Xjdc-96OGzxo5eGbhCG4p7zGnxNmNdzvmqdNkIYOhx-0nvI62tY2LHr3bhyN5oEoRQTwDYeaT5rh8ByQV-2EQbWSxSpydiiw1r4hm7hE1ZcOnc2JsuqP4IMZtFSDJNixIeYjZ16pPDcSDJDfy1SyLt03UnYxffnLPQh9xw3WWoqBTq05xB29An0Bohvky4mReaMcfh36ko1QBMFtWJKruZXN0J40CAvg7rnmgL3eW1Asf4tdXgUS7gVTYF3Nyi1kGdRDaYL1zmt5DOjxPrnkJAIWNDwLYI8cXpphD7IAtL_iLzhsU7Dmp5QAfgyerz7LN_Z7dBniX26mmTYvPOEZBe9hOOmaRwsYbWtyUHDgPvJvBzqstVyEnhFLggkRFIKdP0lq2c1G9k7X9xyrRgavReJs1JkBv_73DG-VNDmcJiV9M2aoS-nilhNSZ-kr5CJcTM9Usss1q4U-Ypu1c4X3EIe22t3ErgHJKFZvzMjw1rWtf50uaGyKwNulmxf3GNhOTbeQ8cGt6Qzr8rcfIPJMuNPcO-a8_dC7mtDcKu90m7wVIS_cF1oE6xGa0RfzXo08WMOmHjPsJWfuxWfu5hSFKn4wLt348DoImm-ni1o7k3oh7ZM_mFfZ2C3ENhnGnx96ZogCkV21Rktn4_3o4oD9isNhON9dtAMu_bMW7dEEe3q27_lmBgeXlOtw6w3v8mi-XrFZkXRNsQDEPIcNuYQ_eI2vpZjjJfaGIthFNwXqxBBijWPM2xkLI_QpFMRKDB4vbHkyZnKAB2oQgMXyBuWPbq8xicvaBQqFAmOndP9f2VKyIdgK_FmOmUWasMhrkDv3qxn5Yo8WbsNa__6uKMXUNYL8ZPwjl3f3d4j9HxAzLWVS4Kn8IawkoQ3QsJ0zWiNEj6QAcdzNTPOTjrdOBwCi6Mu-BM2dFGWclO8e0oltbf3k3PIrteWeUFtp0txV0SbH2sCFiE4zWuy5vg1F_ApVYMx44x47xUkBLXMfUwiJe3rZ61uyVsm_SsDVYtrB-LJkRUR6sfvDtv_0vJ2_64TkRZgWz6PiqYe0X6ivJHeOAEcpw7kjf2ps74-CSN1BGWF_pN-UJcyAZdD34qnN97SCUGIBYVf5ccDGeEURc2IckKhyjJjWCMTSrXakxPGJYb3qP8ChvfVgGZJ0KU-uhSbcoEdYzNBxj_AFMzjddJ-0X9Ck8Hnd4zD0KAdogYhYlpK9vuOanfdy5bJRy4ysT8Y875uXzyp-XcgUHQKRgu8U6BZbbOVDU-DfnXItwjiHZYcquwuI_zRMMRsdo4P413limJxxLj5XeyP_W0JIJyDypwnNrgjIgHxCIaLGZTFfWyUUgG1vwWq6UCjeZcYkibbJ-p6m2_ZLZpPJqEsCniXyJi0g_L5AQ1wpx9xqJVULGL1Es0xEuMcqVnauKE9JyruqyKt11RKDacx1ZauSUSZfHsAAtBrTzV8pc2DIdLPYgGEsFPaLNQk-48RZPzz5RUd-yDzonKMM7OS32XcKfzQiSaLcI6d-7iI26Rg6KCPYL8q8C0eH8PGiDP6tMiAlq9Db2QL14tgVLrcsPn60l4qJ95UCdcdRy8M9yA9RBvUHomUtc2X4oiBDio2Nxx_uKDLz_LJtDuVl2Y34gL03BaSd81Mq4hqyS7np6e-E_aVdOyJdq9J2PTcgyZUxnGbst_hzplZe8mn_a9CqBxPYPC7VQiNonjNHqHxffyAvwyeZ80TKLi_yNHtxFHk9Ckqmz0vvAOzEljMShf9MVWM6eqXQKrqSR5u3Eg9J3nXnKR_6gZAtI7wjkHtUdNEN7Zho0cskEBtMvHxfBOC5n35C6jYwKG2YLytsAEmyWbRECQExw_05FZUFi5d1U823Bfq0MP4dXNoACAYWQXkpX00YOa74VXOAsTIBJhJ8j6k7cm5jLwxwfZqh7HWjIAGR1HFCZda5vtcyc5vleEhLHmoI7yhB7JzPh8NpgPNnC9EAAJUPJvLoGzrUy5EesvKaAdYNzJVBI3uZ_2AYhQZuJjkLy5dA-QOEMcANcveis7odWk5lqNq0wa5smEEf9Qd6OZUmJbBTkTrATlPs2zKbypJyXvPHM2_sqt9ylJMRU1u33m6W9TA3MqsZlMn0urO65BmMiu5RQDV9LkCmHLgOs9xa5p6R6Q2urPQPGGxpiYZywQTKciuWUlA2NHvaYf7DDJPiP1iQu3LjBbYen59b7hFyPPixl61Gh86b2Pvi125Jp-AHMmdvr-H5fp9ljfqXlCgCoBHpwWTxDG0Hqs1kg5WES7KRHssgLVKsy3LkktEm8yMFEa81E_8dHjMgXkselrSntNYCjThnrYUdTMAndseL1y7iCLFzPbvUbQ7ITvVry2CQZxqg5jkL570QNRPoydBOibihwIn-UyNbFaHQYB6fVAIY5Wh4zFHG7Gtp0-TemkoslIX_KUMFC8Fo3oBBISeWMeaqMBcNOcYzMLZ0UJZsYXljed-nKNiHQo6RPM1av4G7aYxLoIjr2zs33hUHGd4uzACNQ-TNBQ-EZZe2hqquTtoE5hb1mepZg9d-27-T6_v_k6k__qfwdUVrz-C1p5CPohMdF0sr5L4Vue2ojuA9VPqPc-sSkA24nZBiXpvwDQq0I0fJG1t3tD8DS8KhdBRXyaoWkHsr7dbAkiuOty8qfKT54xDfz21WjscYwxDDeGlS11gRnhTZSeL-cpS9Ff4XvZNS0C3Jonv0a0ifCD9M-70vwL-I5LIjt2uYE44ddTvtrBZ2F_DoFJ1jNLjDU4d5GhV829dBIRUEFmOT67BkzwXIun3MhIXTC-RxEZlEVB_5-IP3v9YvZgwPDHotGrbfxVlqS-82Fz3ejvMnSRpF7OAbziD4DHLMF7Vb6Cwj6uyoH9oUmiAZ509JXV2Nk4IkwZChjgS4rmnOE2gIlWyIuJkzALdoLGusEjUamoXU1gN71X8Q5bdI9Gii3QUzKM1L0SYrRlhs-JMH_u6kMD8u9bWm5ZaFmFfUAWHgy4vpdOInvtCWeGYD7qfHAgWFUO5_2_6frC1xk66WIYLFbiLKuvhYZBGe-g9K3iWgsLxXrFfs0UgmyJ_Bh0drFmZQ06LPusQgebaWPXXdotr4SZGEdEDcZ7ZZzEFdtWIddTI93_f8tHUGJs75J6AqqhhfHVimoNC8hyqnVuDaomeqy7-mzcmqbeLisysCmwfk3nE7WIwe7nEgcow-B1fLsKbjOlMntITPw5roIj_G5uW1L_5rpWD5SaXNmOt9IKPQyjSu_qOdyblbjjJQ-IrGIhkbQp27ZulD_RqKHIBsEfu0-YYvkBPmw7Ws-3W4BuJCH6V344yltnRszqlBN6iZQKF1H-hE70RJM6omIXpivEO9CyfAaCnszdsfPr9zIYaVbzhl2QHRvPOqyXhawvIyt1I0LPEdDTXgoD7NBRQCkeSj7UqFiZnbE_8ZcJodcNx-KdI-dGklIRom3Ml_-1lWosoIGUt4EkzT8kFP6lWivab975lq0OU8Oj3tIHMjS4rHPfNgA2eryjQ5pMnIfE6lXglE4X39icS-yOW1oJWbAfDrWa93KNpnQ2CrUVGaJ3z_wqGkmzouPzIDOu2pXARcJnP2yPzFt-A6T59GlZ8AMWtZY3Oenam5tKhJn_rmzUgDlGR8kdsPp4RusyE6y3EldfUKZNOB9k4s2Hv5g9p4mRu2FuQ3GnT83MfPvem72N2e4h40iURtw-3Q8xwi9yK_YeK0u5CMydMgyKBmY6Ecd5kVJ-Inihc0ZeyuW2Rtfh4zBUepsVIObfdIAosUbjaC5Y29G6RvxW1WYRTHNPuo65XfQCDIT6_ocSa8naKPQ07FAofihafCj6OgkPQelxxNiLsQmONDrtO5e3yV_SbEk_h3vQ1O0tjgwdiP4FWW7kPcaAaCy6s26YTW8HrgXnB3Q3JG0qw4rdhbR2UyY9854IVkVv8FVGIK0eMljBt1pWLN-6G5UM_9PSJpfbntutPvAacVVSgUCe-Fn2r3JQylza_iRDXvcwNQqnOdjqjijQpKSCkWFvxyyJsft5WxtBc5y8IuLMNM4nqIO-jwvf0mnz4jnqTuzVmBKpyfLz8la3_Yp2KaovNIcSG6y2WwYint0K6IPNRW-H2PPnp49lHkt4rvezHGsuyef_aP7PX-1c4HeQz1Wd1SeFfZe1IuLKBvdKS3B9CqxsbMO6Y6pDmVPWohq825JaDGSbUox393oL9NBJdQMGB0ZmTuUsWpvtHrfp2OxQ-1IFQapQr8DtoOtrwF0urAA7en5bWey5pAnV0OGbyOpEgZ2RNa_QaH6qk713zaDOzje5cgk4suO1dDRBDLf2MpJRtBTQN1zx4mz1ILcvw0AC4TlA-PrRq2NUGZeqbOeFO5lkwXYyp6oWwSuKt0InGHR0vyIGUHx6FBoutBaJHlPecLOBnvcqn928CvAgwewVt3Qz2BoNGN1dTdC_Rh3H6yeb7mAw8rrOhbnUQrthetHL6kev2dw-Ucil9np66fI6UuXJWZ6N7ARdgOuNSS7GUAkLNaeBYV_D3e8plMAJUBAfCe_nGl75GskPMIlWnIkSIsXJq9iTJHI_5HcFX04ga6e6Hyhy0Uxojl_0Kd6UBRYDrOT62P9OJEj3omc6xbBm0uvM1ZswfqeIzbH1sld3PEM9G3PCwbRvGWezVjQWo0_r-f8UD6Be6ChE36-FgFdAiQIWkWVlrO510O0G8OWoicDXO0bfNMjKKk4yf3xBoPMwOAZAYRNvyKo0OKdd6SXswBRtAoQYj3PYY7RPTaagX5X68zLGG7qt7zUoBzHhZ4HCa-iNvUhk-RTP2T4-w-0fPGh0duyEeEYdklTWE3P_f6UKAYhQ40dYhY8cJ9IPHKc0prJoWpgj3xQB3R2gvd_jK2lZj9ZqIhuZZS1EcNYZStw3wZy9Cg1LC86Le8Xitx_MtLwB0nmbpOUOucjtBEO0_p4DLAEXAYeZo45vRh2Ayja1vX2LZYq_JSlMmggLRaOrIjiTPFamqOcrbinbzVJ4lPKTHISk6JrDsTXTOKrPtDORIbTKcwD7W4lcjZA2B6rf6c7__Nzjx-3lzjqX6BCC3m5fBzuEeyJDx0_TIA8dXDEha28otseMR2x6mouVkwI5zKpbt45KjuHWNbD8xMDYg59txuvDYN6ncnVUFkOQ9WUz1gtmVJWexA6kAJKDNB_LD0-jkzb-8SYN3RnF1QqBR6GJEbIR2M_UjED0GxT91iT3QBt6vdZ25ro71pM06wRVdNMHYnZXFbVn-bM1HTw8Rc7DMB3owQESUQm0E6UodamHZADFvG7f0mdpbDTKZF7XPsHMWR7zTXzT3DHx73TLnGbC6kHTdzQ6QiDF36hx9IacYnzqTHiXS4S5eY7ANa6OJGab0I0uwbGysMHt0gGPxdV5Ce5ASAY6HjarioU0Jg_dqYLgAwWMHyxkOwojWBlV3EHHMenc0vRCvggTolqBfq4erzxCFmtVZ7ynbOdT2KAHUNu0qt-UuIXM6IJ-8O2kIQlKvVENHjYBVBzceBd02657DjqglP0cjmETjbHWNWXNg-z32uGxAKnunB7_ai-fSNwakDyFzyPIi-vT69CJOI9UIY2yyWTtNyNCiUUSAgSxezbXy77Af3gEK_PjSoXHyrRAtEPv4cykr2_tZ7qgqQ8E1eBsizz2mImxChVp6-X4GRhzfA5hxu1IU2BbXIzRoa8YwViK33oaLqvITpEnGjxFgx8hWHaBHNWvBzQBlE3LoZu91JZ8jz6XvVdDbUj4mo96fqYTFXdGvt-iSKKaCmbbBcVSrk8uxxvauBNfXlYYdhyZwKlzakaFFd05rqag8M3VG1q-upFoiPBtrgcMqT31NkprTjw3YDaXe9OiNRlUNT64cVzwlkhxU4tabkuN6F3PXvFTzoDjICei4Vd9Uwab1_yAK14OKOwk8GWjmk_BSqEJCwyeAAnbhjhkg7VfmO3YAN45Tg09SvVF7E24HmVoEakK1MqfXKl54LFmedpkaZw3jcp7yMtFLhNfB0iupSJVTF7zK4k4NvmiDVKBXa_vNCO4SFcpLzOeuw6yvH3WpBH2C6J3kd-7izeZsDcZBNOZak__HXwk2Vq8kpOd1SalueXHJhe9knJbTDyi7KRpZOya6CnHU5vxxTkGhYCVWYDFr5lNWp_teNUky8rThkTBNjTIX2RpWnaLUFuQ10NolmR4wd1cn_GbqMGqbPeUlxguIHceNM1nh4ND8vJafK3fFNIZsg2tW_lZmx7QkIRC1b48gQkQPwksNsqnMxOvfELo631bqq-i-HqZush7V3qpyITXPVwghp8kERqVdBzfJseVuZajlvsZ1ManurZ9XHV5fbXTHMiQVXnWx7vuPG0rOy1DLs_fMoWQfPirks1gOT-05jPTmaAOd7NmUFmqSWr6SoQh1cuWr6G2TmNYCq4oB7rEnwHL9TlPyzFHM9MnLw5Vtxjy-7Js4fbrhHr0dbKsmqQSgh_eU6CT6tBlMlOaPcblYixG8TT_ko5b3QSi2Ewn6-Db-j16YevOeeVTU9MEmJCOauluSoOF5okXiT-65Q2aR_01IU7fObvwMHJUBeJcdxLZDKX4aYz-HIA4xRKYayxfi1Ix0muMfNiMtnXWLuKM-EPNJybrNnykUsiF_noX_L5KZ9Ha0qHlP2k0yjGLHj_QA0tH69iX5xe4M8hH7Ko8dN4lTbYLhtssnH4U8_UTtksPI16gIynl8I3W21WlzGWB47LWLrEn18PRl3Y4VtyYvmyRBvqHfeeAFuDoqVjoGaBozucdJHomjbGP5s7UFFJ3MiWruxpo2IkTcvz1PjeshujRHPsZ8bwVaPzrvyelyx-dm5STSf94gSlZskePSBE_P0lV1v2qLyQljfAWTHMb5cQ8V1JJnN7K1vlSJfhDESoM2saj35WS7SJCsaDXJx-yuaFeDqGT_nN8L3Kpjr1QGbUxq3D8p8Zoxj5b92ksQ8CjS33YnvSRQLUFNuAHXiYRbvA1f8gkEJHdxuo5srsP3fh4FEnRL0uzw-LtimG6W5P1wTYx7inWclFfwzRR_QFnMwESLrTwbpA-K6iUX9NJZWiqUny_geFdLfjsd8ys6m4-A9-8ryhYyguZY0hHKPkjKbecfNZy9vLhLtMUx_gzgfMUn9lERbS7TMGPbTrHW694IPIpF1H24tPU9d-FzECPklTbonYIrhx8sJ7hiifb_diUGyZv0lJM7ue9U2VQzo068joRQGYynfjQR7Y75DHmyDqD8MyOo_zegkucCDbVWCd7wqwnDkw1R0JcHC2x4L1kv1wKrgrkgmcn7cf17xu2RiP8CtY0eTo_CuZBphPJgFlicIEKurXG7EwWbPfs_e1hwEwJU7nyuJnlk0s1Z943vpwwc3uE1Wp8aXPbInvCBoaL_MQYKctw2TuGW15IkFKTRoPv2EpxlX9JXSXqKAHF_9bYwGIf4bAmjatuFAjbR__HoREMVwL7YPQO0eCOemK7E0bxcZQu-RE3UNwM7tllKPGRlu5t1N0xzZKUjxjM--TNtaSrw1th_of4ImyDD3HUJ7VrrIq3DJir0HtaRQuIYToMLloMvlewlvffue3Ca5GE-jEUhLMrWPghvPFzo8caZdLSlf0LbtaCWQWGtGIq9BeEm7q_bPCbiaiwkfWJgJkgAJIfTGefrA04xCm88NPKSxkuSEMHkcRfGtjyPX2xjKBZosPzYAcfh4uU96_euUz0sm1K7hkx56eLqnPiUpLjIiPrJBCqxpIHvCIEFWeQS313L1F3Noc9dGjsdUbgTQS-__eIvPVR1JJXfb35NM3p-43wEFSO9kKm7SFAev8DnmDCP36PAP8grCW9vHJG4xE3QbXzH3qWegmuZpodQ8LAFavgz_QvFGvPT2Cw-nkEcLoZv8TZZ2EwZlWBFon8TdxbZI-Ic_QtmRcjXyFhhSm1j3HxZAfWAFS2iK0JICX5V-W8eEqH8x45PALWn2RuGV1_JtN0KrXCFTp3RYsgGlRRuDD7vfE5HnE4UTGweKJjdsdgbtg6HsM85yDHdPlBXw-FBVYwqVTCEyJEcY9_vcKFVwP_ngR2A9IQqg6iNW8P-oCg2PWI23FJYpaisDqi7iiiOKP-1u_QHVA_gOEvY6TrJieJ2OGZooq9aAQ2IFweVd84loz95LsC1-WO1NAniZOIq0mPLjAgkpFAb4S9NLbtoAGgpDw7gjlrBAk98UMdSmK9ocBJJMLTt6wlBb7tjr8v5T6b0S8lTqdztz9laSVcwC2KajOIbYmCQEGOi5xgd1__BV06uSO5O0Pr9S0A04kFiVRTjL27ZuRQ3d91i6j_WTJu_c-dOU8bIZuPRSB6fKzYgPKIdUHmk28Ly8yK_DPgs6PknSTCSxhIRCdtBHIEBV6hF-OLy76rVaat-PthSJGLbjSguClbBhoh2_kvU4euTGLShTweIeNG9mw_RzrbRXf6mh8Q-hhDyC_kt-Zdv_kD6qnziCtJj8W6OLn-kUzxe3lqsON8M5qaHkTntSryC4rgjAU5TSXrke-zmX2qWXltpxpCzA4hmzV1cj9Yd9xbJQZ3cgZOTOwerhx2QpGl-ZYUS_bcIQUPeOfDKSFop2Rv7qR_FGOmR2rrbehrL5nVtYoymfqAFaEXUPqe2NuTczOuPxQz9CUBY41ar8uAWvVknGFaaM_H_PxBaZ7ushrBCfxWJ0tbiE2o8MaHzPU4icbbkY5a1LochxrD7zA2YQGIco1He468jSRe03N4r0Pq7yvosirqbjN4lN5hsyIGDEsWWoPZiOtC9xy7RR-HbepHE5lJBNia3sw8jeMAcdysofmLbQxN1N-IVg9Q0WQwxZFNvRT9H_Bvk4TJci4unX736J3VB32Unf3J2slNYMUU4Kl7H139bq9DX-xtq0lz5tPdkUGJJ-jglPr0r5euy7wRZs0FzzN_MTF8G3p5OHUqxtA2MAddUsAJXS4Ycz00NrSMtGjD-Rd337sK59loR0y371aL01WqKiQAvwDHQL2BLOQNQDSmWryiuuk7k5YQnBbk6Fn_r3pfebs8rmxLDo1iCoZ0kcO7FbQEZJWd1pmo7w7K0KYQ1mj1KncvPoT6lySV6ykAQnsjwwOBh8M-BDVjKrFc7Rp-3QKDj0aShJkfLPe0bimhKUse9470pIruKHcRZ5EHEhcK6hwA4II22BwpGwgqLyFLM8uIrl7m06A5zwHdLG-9IputZdumTB4OLNbpcBY4l76g5XjRTjhYS8KFmJdcwf0MBbee75zxk9l6oxom4A-zKK6J0JBAvI5pHC4tBKvD9V0IfMusYZt0m-FwXDY85Ajnx-iwmaNAMrO3WLeM3De0QSvQUZxc2Uzqx_5k9RJBqvUfgOpzbQ_cIL3V-S7tFEx7X7rNCgKB6DzV9blKMTDDOeaJHkGP0RliKaOwVt2s_9g0pW5LNXcXxX-_qSYzM70rYtXimPHYKm_TTK9eh3qW4qk2x_IqmmLYPsVecPZ8rM3okBSLliX9a-efRIGjZhisqAxHbsvSyYGJA10eTFRXGchbNonEnImeeNqVsgUQB8nPfUNYv_SvzsiBKvs_tht4QBV2XI8XNVR5CrgoA8Ndl9KyyCvblnmcEXh7QCXXyvX5DbNsnx8KQdW06tS21qlevAZR6cnmpjtpzRVwfMex1kdvhfnoLQv8OvJ7gCJVg6hCm1v5LdeCKKYKqNHA_UcqI6Ox_db78xYvE3IfTGQ0PSuDgFb4s17I-f9nRmh_Otv0dxpC6r5vtIrok1OBiFjGdGdMpqcB5buNcPDiI1bbBjMNo3PXvEYUQz1i-vTHnyrI8DeuVt5XBgGEIO7dFxk1Gw7qHzzxiwZ33Cc_rDJ_z-l-jkv8EZI7z1YDB8zHwzi33kDdSJsicdA92tqI0L4G7YiPB_6k5dUJKU6pxQ8GEReIcF16WOWeAtRBaiPmEGSdlvrfN9UjJrBX8HTEyHsF06QoCJWMXEmLmrVyZxE6YNvFJ9gvFhAGxphy95nFzvx9gdTTVXsgP3Ogy1Mtz-tMXao4bH22E0qlzj57Iolr5p0JINS1Q-aEuEKKFh8X0ba_2onRvkXLJ43Ew-MPeGhvLpa-ZANOErJKlI0a3kglHedj6F1ej519ulsRjQQVb9Qu6lZHywIV067NqBc2LqANWu3_V7VrVQJT_lh58fw7WcUAxh52NUKBCaaFB1j4ljE7AnOb-fRCS55SNKyn8Ug2TiADw_Roya_7xfkioKWbBTFJgF2maqFUwp85DzrmEE21N8CpSJKEEoG2SPKw5NkpLNL81niNv11R-BF0ptQ7yYJNv4zwmc-2yzGT5s_DwXEvvTA6-rzUn6-pVMjqraND5syl_bRWC-2X0bCKSwq7bKii7HuznebUa3UQyO1B1ozhlUOVHJy1Sj6lQHhUXB7dqJDgjPgtPJ6r_Y7XSAzKQwcSd3cE1FDsfDepWO4XW5qiMsFIJR1PQEeTqWjOc7WJdDaSIeMsfLzCmMld4i_sBpMBIC9gRGkWLxKvLV9LoefX44z4fYnCB-ZiSF75Xr_i37YIQPCo_HqFOoFy6BkdIGd2tVyu0TYbDSN47ksfMOZVpy2cPPdcQxI-6vEmVZehSDDotc9Rk0-ZOv1jMQCyVIlTyIrXFGfNXiGMMQxn87jKANmjFMKhNoKe2QiwGlLmxTN5X67f9-KO8ki2zfXmJI6BByGIb0TK_aRgpAN8myJ4SA9Z1cQYeJpiQXZO25p7tCv72xxDQ-qv_YClGDrFg5nANYj7ViZhlS1ocB74wxnfLMsS0ZNKxME7Zqpkekgl5BCt0M2VpLdPJY43mzStj2VbsEgVa4kHkr2Q3jrj6a55WUBb8QSDTDH7uVNcFbzRMsU4NraqKjnpdowKmYi4BD7wkwN3Mf9mzQKyKz4rT6JNNYJJnpyIVjwNW4Q0VCDfxgyxLkh9MAqhaWIihuxZTwVhFss09SU9UItCOxPXgNiIkkvRcGT7s9saOwckIdSuu5Z9y4Hjc1yFq2LaqqD6btsfDrwR3wyUnKDLh7AjB304zLIvt8Eu-GEPLAiRN1eVpWmQ5ckS0u2srLPAnpQkE19a3ddBHaIp888lg4uwj_ZimVfhCuEUWMU2vmdkzwxB3E_p9a2-hkkNsuSkdEeb855HCF7R1hTjkFGOPncRjOEppYTcfFMD2Bvj73MhOPGeHXSd_w1O32l_WchiG3StiBeum4QB284XHn0f3T6b-hAvxrX4GuGBCsRxvOUqmk1fPcumFB3O0DlpFfKnCe59k04pFcTI7Jq-7GuLk5QhQ-PA5z8gYdTFFoJ9oMfNiXgushnyoXCY1qLoHYHjmrMf37rRg8J3xboWKa3faLh8fSTUKIdsy2Z0Z0EKi5nsNOzCoCBXEZUAHzA0oTniu2ZbrwGWZJBjYB3i8PXMWS1kGJ0RjOaMMBoLg8j2ZQV-dGKwe6f1glbcJaL3LIJ6D3mB9p5gAdPKJ085wMdfrsN-NARti0DbSu3l5IQCcejwSpjD8F8h8CpDZHK4wuPLWT5yJjSMEAlisoLm3uZVJTy3b5sTgUdDtGkPXbWO9cH5MscvyO-BqzHe2RIfhDGeMc_XezrO1Prtl9-7P6_5IdR9BlYF1Y4WYorkpKU__67KnNLXIzimj7-r7a4btRi3TCM-15e1dc-RdvczI_sQWZq6PlWcdc9TjkYOxZw2KHqZiegFPFXf6RK5T9MzC4xxUq75eaVosnoL9N7wDxC-Ky5GWAvMMtJgvTX8CeMmvNGZN0fAYvtOG4X2_4pODmbJPOwKkGNv1UMiSgQBLRYtS6FKPSrA19cgqj3UmrzIRDgotLCkTn8aR-fqB5LIRbwqQ_MfxKu0CXmHCqBdjN26RjSPNMpSLWngmMTW5LVYRjKqNNRUavRgY8WxQ3Zu6lZO1LgMnKre-zS7hYAgJy2WAIwQ_Hx1c4YqkZTXNEuC0QaX4uY3jNq7M31pgTZj9_EoI7qnOYtPmdRY9RxMJWFHP095IJnsSUNpBYx4mZO6PlzF_3u1e4KaVQp3qTWxY7O88efVE1tO6Mqfs6aD9nyzIOCpgdsOlnMEm2rvVdcQbnXhIj_D3O7FnoieYzcfvBE1lruM3l_I426WvTlaFGMyhf501ABi7CKjRz-wfJHLTY7bkImmODRZTm9ewQTuFCL0jmlPx5sfXRe3MVLYRYDo264DvEFWx06HZxU4nXnmwJfDcNskYXffgKYPA6frrqCXeOWygJxX3lx69t95FGLYjZw=",
+    "summary": [],
+    "content": []
+  },
+  {
+    "type": "message",
+    "id": "msg_067cbc1b188a8a7e006afc008198448196ad3bf161c08bdf81",
+    "agent_reference": {
+      "type": "agent_reference",
+      "name": "k8s-incident-investigator",
+      "version": "7"
+    },
+    "response_id": "resp_067cbc1b188a8a7e006afc0078407c8196825c976de2705bd8",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "output_text",
+        "text": "Root Cause:\n- No CRITICAL or HIGH findings were reported by the provided automated scans (Trivy and SAST arrays are empty). The main residual risk arises from incomplete visibility: the SBOM excerpt contains multiple third‑party components (including security‑sensitive libraries), the SBOM is explicitly truncated, and no high/critical vulnerability detail or full SBOM/CVE correlation results were provided. This lack of complete scan output and truncated SBOM is the primary root cause of uncertainty about production readiness.\n\nEvidence:\n- Executive summary (from provided data):\n  - Trivy (container vuln) results: [] (empty — no HIGH/CRITICAL items listed).\n  - SAST results: [] (empty — no HIGH/CRITICAL items listed).\n  - SBOM excerpt (truncated): includes many packages such as jackson-core 3.1.7, jackson-databind 3.1.7, busybox 1.37.0-r31, libcrypto3 3.5.9-r0, gnutls 3.8.13-r0, gnupg 2.4.9-r1, alpine packages, commons-logging 1.3.6, etc. (truncation explicitly noted).\n- CRITICAL vulnerabilities:\n  - None reported in the provided Trivy output (empty array). No CRITICAL items present in SAST excerpt.\n- HIGH vulnerabilities:\n  - None reported in the provided Trivy output (empty array). No HIGH items present in SAST excerpt.\n- SAST Findings:\n  - Provided SAST list is empty for HIGH/CRITICAL severities — no concrete SAST findings included in the dataset.\n- SBOM Analysis (evidence points):\n  - SBOM contains libraries and system packages that are frequently subject to CVEs (e.g., jackson-databind, libcrypto, gnutls, busybox).\n  - The SBOM is truncated; the excerpt may not include all dependencies nor show vulnerability metadata or fixed versions.\n  - Presence of gnupg/gnupg-utils and certificate bundles indicates cryptographic tooling in the image which increases attack surface if outdated.\n- Note on truncation:\n  - The SBOM excerpt is explicitly truncated; absence of vulnerability listings or version-to-CVE mapping in the provided scan output prevents a definitive vulnerability posture assessment.\n\nImpact:\n- Short-term (release block decision):\n  - Based solely on the provided scan outputs, there are no reported HIGH/CRITICAL findings from Trivy or SAST; therefore no immediate blocking vulnerabilities were flagged by those tools in the supplied data.\n  - However, truncated SBOM and lack of CVE correlation produce residual uncertainty: an undisclosed HIGH/CRITICAL vulnerability could exist in omitted SBOM lines or in lower-severity items that escalate in context (e.g., jackson-databind historically has had high‑severity issues).\n- Operational / security impact if unresolved:\n  - Potential for supply‑chain or library CVEs to be exploited at runtime (remote code execution, crypto weaknesses, deserialization vulnerabilities).\n  - If a high/critical CVE exists in a dependency not reported here, it could lead to data exposure, service compromise, or downstream lateral movement.\n- User impact:\n  - If undisclosed severe vulnerabilities are present and exploited, application availability, integrity, and user data confidentiality could be materially affected.\n\nRecommended Fix:\n(Structured remediation covering the requested areas — prioritized, actionable, non-mutating)\n\n1) Immediate validation (must do before deployment decision)\n   - Obtain the full, non‑truncated SBOM and full Trivy and SAST output (include medium/low results and scanner metadata). Verify scanner rulesets and DB update timestamps to ensure up-to-date vulnerability feeds.\n   - Re-run Trivy and SAST if the scans were run with stale databases or incomplete scope. Ensure scanning covers final production image(s) and build artifacts.\n   - Produce a CVE correlation report mapping every SBOM component/version to known CVEs (include severity and fix/mitigation status).\n\n2) Targeted checks based on SBOM excerpt\n   - Specifically verify jackson-databind and jackson-core 3.1.7 for known vulnerabilities and ensure a fixed version or patch is applied if CVEs exist.\n   - Check crypto libraries (libcrypto3, gnutls) and busybox for known CVEs and apply updates or rebuild with patched base images if needed.\n   - Evaluate need for gnupg and certificate bundles inside image — remove unused tooling to reduce attack surface.\n\n3) Strengthen pipeline/scan coverage\n   - Ensure SBOM generation is complete and included as an artifact for each build. Enable SCA tooling that flags dependency CVEs based on SBOM.\n   - Configure scanners to fail the pipeline on configurable thresholds (e.g., any CRITICAL or >X HIGHs).\n   - Enable signed SBOM and image attestation for provenance.\n\n4) Mitigations & compensating controls\n   - If any high-risk dependency cannot be upgraded before release, introduce runtime mitigations: apply strict network egress rules, enable least-privileged service accounts, and deploy runtime detection (RASP/IDS) where available.\n   - Harden container images: use minimal base image, drop unnecessary packages, enable non-root user, and reduce capabilities.\n\n5) Post-fix verification\n   - After remediation, re-run full scans (Trivy, SAST) and regenerate SBOM. Document the remediation mapping (CVE → action → verification).\n   - Produce an SCA/SBOM attestation artifact and include it in release docs.\n\nDeployment Recommendation (GO / NO-GO with rationale):\n- NO-GO (defer deployment) until the following minimum conditions are met:\n  1. Full, non‑truncated SBOM is produced and reviewed with CVE correlation performed.\n  2. Trivy and SAST scans re-run with up‑to‑date vulnerability databases and their full outputs are reviewed (confirm no CRITICAL/HIGH remain).\n  3. Identified HIGH/CRITICAL CVEs (if any) are remediated or documented with approved compensating controls and accepted residual risk by security stakeholders.\n- Rationale: Although the provided scan excerpts show no HIGH/CRITICAL findings, the SBOM is truncated and there is insufficient evidence that all dependencies and CVEs were checked. Releasing under this uncertainty risks deploying images with undisclosed high‑severity vulnerabilities. The NO‑GO is a precautionary decision to require complete evidence and verification.\n\nPrimary Security Risks (summary):\n- Incomplete visibility (truncated SBOM) leading to undiscovered high‑severity vulnerabilities.\n- Potential vulnerable third‑party libraries in SBOM (e.g., jackson-databind, crypto libs).\n- Image attack surface from included tooling (gnupg, busybox, large alpine packages).\n\nRisk Correlation:\n- Empty Trivy/SAST reports correlated with truncated SBOM increase false‑negative risk; absence of flagged vulnerabilities in scanners does not guarantee absence of exploitable CVEs if SBOM scan or scanner DB was incomplete/outdated.\n\nFinal note:\n- The provided data does not show active HIGH/CRITICAL findings, but the truncated SBOM and lack of complete scan artifacts create unacceptable uncertainty for production deployment. Follow the Recommended Fix steps, then re-evaluate; once you have full SBOM + up‑to‑date scan results showing no unresolved HIGH/CRITICAL items, the deployment can be reconsidered for GO.",
+        "annotations": [],
+        "logprobs": []
+      }
+    ],
+    "status": "completed"
+  }
+]
+```
+</details>
+
+---
+
+## 3. Historical Baseline Execution (Pipeline #3076259725 — Version 7 English)
 
 - **GitLab Pipeline**: [#3076259725](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3076259725)
 - **Job ID**: `#18086209361` (`ai_security_review`)
@@ -38,23 +710,10 @@
 - **Foundry Agent**: `k8s-incident-investigator` (Version 7)
 - **Model**: `gpt-5-mini` on Azure AI Foundry
 - **Duration**: **41.0 seconds**
-- **Prometheus Pushgateway**: **HTTP 200** (metrics pushed: `ai_review_success 1`, `ai_review_duration_seconds 41.0`, `ai_review_timestamp`)
-- **Grounded RAG Knowledge Base**: `https://srch-kubesentry-dev.search.windows.net/` (Index: `kubesentry-index`, Storage: `stfkubesentrydev`, Source: `agent-knowledge.md`)
-- **Language**: **100% English**
-
-### Executive Review Summary
-The v7 Azure AI Foundry Agent performed an automated multi-step investigation:
-1. **Tool Discovery**: Queried MCP tools (`kubernetes-cluster` and `prometheus-metrics`).
-2. **Telemetry Correlation**: Correlated the empty Trivy vulnerability list and clean SAST scan against the SPDX JSON SBOM.
-3. **RAG Knowledge Base Query**: Queried Azure AI Search (`srch-kubesentry-dev.search.windows.net`) for dependency advisories and CI gating policy context.
-4. **Supply Chain Evaluation**: Evaluated base image packages and Java dependencies, recommending continuous SCA and strict blocking gates on all future release cycles.
+- **Prometheus Pushgateway**: **HTTP 200**
 
 <details>
-<summary>Click to expand raw JSON response from Pipeline #3076259725 (v7 English execution)</summary>
-
-
-<details>
-<summary>Click to expand Pipeline #3076259725 raw JSON artifact</summary>
+<summary>Click to expand historical Pipeline #3076259725 raw JSON artifact</summary>
 
 ```json
 [

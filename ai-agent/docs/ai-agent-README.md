@@ -217,8 +217,10 @@ The `ai_security_review` job:
 - Pushes success/failure and duration metrics to the Prometheus
   Pushgateway, visible in Grafana (see §9).
 
-**Security gate status:**
-The `container_scan` job operates with `--exit-code 1` on HIGH/CRITICAL findings. Following the Spring Boot 4.0.9 upgrade, all previously detected CVEs (including the Tomcat vulnerabilities analyzed during initial testing) have been completely eliminated. The Trivy container scan passes with 0 vulnerabilities, ensuring that non-compliant images are strictly blocked without any bypass.
+**Security gate and review status:**
+- The automated blocking gate is strictly enforced by the `container_scan` job running Trivy with `--exit-code 1 --severity HIGH,CRITICAL`. If any high or critical vulnerability is found, the pipeline halts immediately, preventing the image from being pushed to ACR or deployed.
+- The `ai_security_review` job acts as an intelligent, advisory security analysis layer. It correlates container scan reports, Semgrep SAST findings, and Syft SPDX JSON SBOM packages, issuing a structured evaluation and a deployment recommendation (GO / NO-GO) for DevSecOps governance without executing unapproved mutations.
+- Semgrep SAST is included via GitLab's template (`allow_failure: true`) and passes cleanly with 0 findings. Following the Spring Boot 4.0.9 upgrade, all previously detected CVEs have been completely eliminated.
 
 ## 9. Observability of the agent (Prometheus + Grafana)
 
@@ -231,6 +233,9 @@ every run, whether it succeeds or fails.
 ai_agent_call_total{status="success"|"failure"}
 ai_agent_call_duration_seconds
 ```
+
+> [!NOTE] Metric Semantics on Pushgateway
+> `ai_agent_call_total` is pushed with value `1` per CI reporting event to the Prometheus Pushgateway, rather than functioning as an accumulated in-process monotonic counter across distinct executions. The Pushgateway retains the latest pushed metric instance until replaced or scraped.
 
 **Pipeline:** `Pushgateway (namespace ai-agent, monitoring node pool)`
 → scraped by Prometheus via a `ServiceMonitor` (label matched to the

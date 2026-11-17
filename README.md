@@ -1,7 +1,7 @@
 # KubeSentry: Enterprise DevSecOps & Agentic AIOps Platform
 
 [![Azure AKS](https://img.shields.io/badge/Azure-AKS_v1.36.5-0078D4?logo=microsoftazure&logoColor=white)](https://azure.microsoft.com/en-us/products/kubernetes-service/)
-[![GitLab CI/CD](https://img.shields.io/badge/GitLab_CI-7_Stage_•_8_Jobs-FC6D26?logo=gitlab&logoColor=white)](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3076259725)
+[![GitLab CI/CD](https://img.shields.io/badge/GitLab_CI-7_Stage_•_8_Jobs-FC6D26?logo=gitlab&logoColor=white)](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3077621954)
 [![GitOps](https://img.shields.io/badge/GitOps-Argo_CD-EF6134?logo=argo&logoColor=white)](https://argoproj.github.io/cd/)
 [![AIOps](https://img.shields.io/badge/AIOps-Azure_AI_Foundry_•_MCP-0078D4?logo=openai&logoColor=white)](https://ai.azure.com/)
 [![Security](https://img.shields.io/badge/Security-Sigstore_Cosign_•_Kyverno-326CE5?logo=kubernetes&logoColor=white)](https://kyverno.io/)
@@ -73,12 +73,16 @@ A production-grade, security-by-design Kubernetes platform running on **Microsof
    - **Passwordless Identity**: **Microsoft Entra Workload Identity** federated with AKS OIDC issuer and **Azure Key Vault Secrets Store CSI Driver** for zero static secret storage.
 
 3. **Declarative GitOps Delivery**:
-   - Continuous reconciliation via **Argo CD**. The CI pipeline never touches the cluster directly with `kubectl`; it builds, scans, signs, and commits updated image tags to `k8s/overlays/dev/`, enforcing pull-based declarative synchronization.
+   - Continuous reconciliation via **Argo CD** (application `portfolio-app-dev`). The CI pipeline never touches the cluster directly with `kubectl`; it builds, scans, signs, and commits updated image tags to `k8s/overlays/dev/`, enforcing pull-based declarative synchronization.
+   - **Current Verified Deployment**: Image `acrkubesentrydev.azurecr.io/portfolio-app:7a01e939` (digest `sha256:07eeecae39a70b91563a8608ce01c0aa64d1be8e6d3a39b855b89642e636d795`), synchronized at GitOps revision `aeee8c907cf53d81d5bce8ec6f586982760c519e` (`aeee8c9`).
+   - **Autoscaling Configuration**: HPA is pinned to `minReplicas: 1, maxReplicas: 1` (target 70% CPU, 80% Memory) to strictly respect the 30-pod Azure CNI limit on `Standard_D2ads_v7` nodes.
+   - **Service & Ingress Topology**: The MCP servers are exposed via an authenticated NGINX Ingress at `https://mcp.20-19-153-146.nip.io` with Basic Auth and Let's Encrypt TLS. The portfolio application is intentionally exposed as an internal ClusterIP Service (`portfolio-app:80 -> 8080`) guarded by default-deny NetworkPolicies.
 
 4. **Full-Stack Observability & CI Telemetry**:
    - Dedicated, tainted `monitoring` node pool running **Prometheus**, **Alertmanager**, and **Grafana**.
+   - **PrometheusRule & ServiceMonitor**: PrometheusRule `portfolio-app-alerts` is evaluated in the `monitoring` namespace; ServiceMonitor `portfolio-app` is deployed in `dev` and discovered cluster-wide via Prometheus `serviceMonitorNamespaceSelector: {}`.
    - Custom Grafana dashboard (**Portfolio App - Overview**) tracking HTTP request rate, P95 response latency, container CPU/memory vs. limits, HPA replicas, and AI agent call telemetry.
-   - **Prometheus Pushgateway** ingesting CI-time AI security review duration and success metrics.
+   - **Prometheus Pushgateway** ingesting CI-time AI security review duration and success metrics (pushed as point-in-time event samples).
 
 ---
 
@@ -168,10 +172,10 @@ The KubeSentry AI Investigator acts as an autonomous tier-1 SRE engineer for Kub
 All screenshots below represent the live, functioning KubeSentry platform running in Azure:
 
 ### 1. Declarative GitOps & CI/CD Pipeline
-| Argo CD Application Topology | GitLab Clean Production Pipeline (#3076259725) |
+| Argo CD Application Topology | GitLab Clean Production Pipeline (#3076259725 Baseline) |
 |---|---|
 | [![Argo CD Topology](docs/screenshots/argocd/live_argocd_application_topology.png)](docs/screenshots/argocd/live_argocd_application_topology.png) | [![GitLab Pipeline](docs/screenshots/live_gitlab_pipeline_3076259725.png)](docs/screenshots/live_gitlab_pipeline_3076259725.png) |
-| *Argo CD actively reconciling Deployment, Service, Ingress, and ReplicaSet in `dev`.* | *All 7 stages (8 jobs) passing green including unit tests, SAST, Trivy gate, and Cosign signing.* |
+| *Argo CD actively reconciling Deployment, Service, and ReplicaSet in `dev`.* | *All 7 stages (8 jobs) passing green; baseline verified run captured, succeeded by active pipeline #3077621954.* |
 
 ### 2. Autonomous SRE Incident Investigation & AI Foundry
 | AI Foundry Agent Evidence Gathering | AI Root Cause Diagnosis & Grounded Runbook |
