@@ -1,4 +1,4 @@
-# 🛡️ KubeSentry: Enterprise DevSecOps & Agentic AIOps Platform
+# KubeSentry: Enterprise DevSecOps & Agentic AIOps Platform
 
 [![Azure AKS](https://img.shields.io/badge/Azure-AKS_v1.36.5-0078D4?logo=microsoftazure&logoColor=white)](https://azure.microsoft.com/en-us/products/kubernetes-service/)
 [![Terraform](https://img.shields.io/badge/IaC-Terraform-844FBA?logo=terraform&logoColor=white)](https://www.terraform.io/)
@@ -18,23 +18,23 @@ A production-grade, security-by-design Kubernetes platform running on **Microsof
 
 ---
 
-### ⚡ Recruiter & Architect Fast-Facts
+### Executive Summary & Operational Metrics
 
-| Pillar | Engineering Implementation & Live Metrics | Verification Status |
+| Dimension | Engineering Implementation & Production Metrics | Status |
 |:---|:---|:---:|
-| **Live Application URL** | **[`https://portfolio.20-19-153-146.nip.io`](https://portfolio.20-19-153-146.nip.io/)** (Let's Encrypt TLS, HTTP/2 200 `Spring is here!`) | 🟢 **Verified Live** |
-| **Cloud Infrastructure** | **Azure AKS v1.36.5** (Dual Node Pools: `system` + `monitoring`, Azure CNI, France Central) | 🟢 **Running** |
-| **CI/CD Pipeline** | **GitLab CI [Pipeline #3077910406](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3077910406)** (8/8 jobs passed: SAST, Unit Test, Build, Scan, Push, Sign, AI Review, Deploy) | 🟢 **8/8 Passed** |
-| **Declarative GitOps** | **Argo CD** managing 2 autonomous applications: `portfolio-app-dev` (App) and `portfolio-alerts` (PrometheusRule GitOps) | 🟢 **Synced & Healthy** |
-| **Security Gates** | **Trivy** hard blocking gate (`--exit-code 1`, 0 High/Crit CVEs) + **Semgrep SAST** (0 findings) | 🟢 **0 Findings** |
-| **Zero-Trust Identity** | **Microsoft Entra Workload Identity** (OIDC federation to Key Vault Secrets Store CSI Driver & ACR) | 🟢 **Passwordless** |
-| **Software Supply Chain** | **Sigstore Cosign** keyless container signing + **Syft** SPDX SBOM attached to ACR OCI 1.1 referrers | 🟢 **Signed & Attested** |
-| **Admission Governance** | **Kyverno** admission controller enforcing `disallow-latest-tag` and `disallow-root-user` | 🟢 **Enforcing** |
-| **Autonomous AIOps** | **Azure AI Foundry Agent** (`k8s-incident-investigator` v7, `gpt-5-mini`) with K8s & Prometheus MCP tools + Grounded RAG | 🟢 **Diagnose-Only** |
+| **Live Application URL** | **[`https://portfolio.20-19-153-146.nip.io`](https://portfolio.20-19-153-146.nip.io/)** (Let's Encrypt TLS, HTTP/2 200 `Spring is here!`) | `VERIFIED LIVE` |
+| **Cloud Infrastructure** | **Azure AKS v1.36.5** (Dual Node Pools: `system` + `monitoring`, Azure CNI, France Central) | `RUNNING` |
+| **CI/CD Pipeline** | **GitLab CI [Pipeline #3077910406](https://gitlab.com/itsme-aarjav/kubesentry/-/pipelines/3077910406)** (8/8 jobs passed: SAST, Unit Test, Build, Scan, Push, Sign, AI Review, Deploy) | `8/8 PASSED` |
+| **Declarative GitOps** | **Argo CD** managing 2 autonomous applications: `portfolio-app-dev` (App) and `portfolio-alerts` (PrometheusRule GitOps) | `SYNCED & HEALTHY` |
+| **Security Gates** | **Trivy** hard blocking gate (`--exit-code 1`, 0 High/Crit CVEs) + **Semgrep SAST** (0 findings) | `0 FINDINGS` |
+| **Zero-Trust Identity** | **Microsoft Entra Workload Identity** (OIDC federation to Key Vault Secrets Store CSI Driver & ACR) | `PASSWORDLESS` |
+| **Software Supply Chain** | **Sigstore Cosign** keyless container signing + **Syft** SPDX SBOM attached to ACR OCI 1.1 referrers | `SIGNED & ATTESTED` |
+| **Admission Governance** | **Kyverno** admission controller enforcing `disallow-latest-tag` and `disallow-root-user` | `ENFORCING` |
+| **Autonomous AIOps** | **Azure AI Foundry Agent** (`k8s-incident-investigator` v7, `gpt-5-mini`) with K8s & Prometheus MCP tools + Grounded RAG | `DIAGNOSE-ONLY` |
 
 ---
 
-## 🏗 Architecture Overview
+## Architecture Overview
 
 ![KubeSentry Platform Architecture](docs/architecture/architecture_devsecops.png)
 
@@ -79,7 +79,7 @@ A production-grade, security-by-design Kubernetes platform running on **Microsof
 
 ---
 
-## ⚡ Core Platform Capabilities
+## Core Platform Capabilities
 
 1. **Autonomous SRE / Agentic AIOps**:
    - Integrates an AI Incident Investigator (`k8s-incident-investigator`, powered by `gpt-5-mini` on Azure AI Foundry).
@@ -109,7 +109,20 @@ A production-grade, security-by-design Kubernetes platform running on **Microsof
 
 ---
 
-## 🛠 Tech Stack
+## Architectural Decisions & Production Engineering Highlights
+
+| Engineering Decision | Why It Was Chosen | Production Impact |
+|:---|:---|:---|
+| **Pull-Based GitOps over Push CI** | Prevents giving CI runners `cluster-admin` access or storing kubeconfig credentials in CI/CD secrets. | Eliminates cluster credential leakage risk; Argo CD automatically detects and self-heals out-of-band cluster drift. |
+| **Passwordless Workload Identity** | Replaces static service principal keys and long-lived tokens with Azure AD OIDC token federation. | Zero credential rotation overhead; zero risk of secrets being committed or intercepted in CI logs. |
+| **Sigstore Cosign Keyless Signing** | Signs container images using ephemeral OIDC tokens issued by GitLab CI and attaches attestations to ACR. | Guarantees container provenance; guarantees that only images produced by verified pipelines can run in AKS. |
+| **Kyverno In-Cluster Admission Control** | Enforces cluster security policies at admission time before resources are persisted to etcd. | Hard prevents containers running as `root` or using mutable `:latest` tags, enforcing security-by-design. |
+| **Model Context Protocol (MCP) for AI SRE** | Standardized, open protocol for tool exposure over TLS with strictly scoped read-only RBAC. | Eliminates custom, fragile agent integration code; AI agent can safely query logs and PromQL without mutation risks. |
+| **Dual Node Pools with Dedicated Taints** | Isolates application workloads (`system` pool) from monitoring infrastructure (`monitoring` pool). | Resource-heavy metrics queries or Prometheus scrapes cannot starve customer-facing production services. |
+
+---
+
+## Tech Stack & Tooling
 
 | Domain | Technology / Tool | Version / Details |
 |:---|:---|:---|
@@ -128,7 +141,7 @@ A production-grade, security-by-design Kubernetes platform running on **Microsof
 
 ---
 
-## 🔄 CI/CD Pipeline Flow
+## CI/CD Pipeline Flow
 
 Every commit pushed to `main` undergoes a rigorous, automated 7-stage (8 jobs) verification pipeline before deployment:
 
@@ -162,7 +175,7 @@ Every commit pushed to `main` undergoes a rigorous, automated 7-stage (8 jobs) v
 
 ---
 
-## 🤖 Agentic AIOps & Incident Investigation Architecture
+## Agentic AIOps & Incident Investigation Architecture
 
 The KubeSentry AI Investigator acts as an autonomous tier-1 SRE engineer for Kubernetes incidents.
 
@@ -190,7 +203,25 @@ The KubeSentry AI Investigator acts as an autonomous tier-1 SRE engineer for Kub
 
 ---
 
-## 📸 Curated Live Evidence Gallery
+## Live System Verification
+
+Reviewers can verify the live system using standard command-line tools:
+
+```bash
+# 1. Verify live HTTPS portfolio application
+curl -sI https://portfolio.20-19-153-146.nip.io
+
+# 2. Inspect TLS certificate details (issued by Let's Encrypt)
+curl -vI https://portfolio.20-19-153-146.nip.io 2>&1 | grep -i "issuer\|SSL connection"
+
+# 3. Verify application health response
+curl -s https://portfolio.20-19-153-146.nip.io
+# Output: Spring is here!
+```
+
+---
+
+## Curated Live Evidence Gallery
 
 All screenshots below represent the live, functioning KubeSentry platform running in Azure:
 
@@ -220,11 +251,11 @@ All screenshots below represent the live, functioning KubeSentry platform runnin
 
 ---
 
-## 📁 Repository Directory Structure
+## Repository Directory Structure
 
 ```text
 kubesentry/
-├── README.md                              # This document: Executive overview and architecture
+├── README.md                              # Executive overview, architecture, and live verification
 ├── CHANGELOG.md                           # Platform evolution and version history
 ├── TRADE-OFFS.md                          # Deliberate architectural trade-offs and scoping decisions
 ├── .gitlab-ci.yml                         # Automated 7-stage (8 jobs) DevSecOps pipeline definition
@@ -255,7 +286,7 @@ kubesentry/
 
 ---
 
-## 📖 Deep-Dive Documentation Index
+## Deep-Dive Documentation Index
 
 1. [DevSecOps Platform Architecture & Deployment Guide](docs/devsecops-README.md)
 2. [AI Incident Investigator Architecture & RAG Retrieval](ai-agent/docs/ai-agent-README.md)

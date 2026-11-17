@@ -1,4 +1,4 @@
-# 🤖 AI Incident Investigator — Azure AI Foundry & Kubernetes
+# AI Incident Investigator: Azure AI Foundry & Kubernetes Observability
 
 [![Azure AI Foundry](https://img.shields.io/badge/AIOps-Azure_AI_Foundry_v7-0078D4?logo=openai&logoColor=white)](https://ai.azure.com/)
 [![Model](https://img.shields.io/badge/Model-GPT--5--mini-10A37F?logo=openai&logoColor=white)](https://openai.com/)

@@ -1,4 +1,4 @@
-# 🛡️ KubeSentry — Agentic AIOps & GitOps Platform on Azure
+# KubeSentry: Enterprise DevSecOps & Cloud-Native Platform on Azure
 
 [![Azure AKS](https://img.shields.io/badge/Azure-AKS_v1.36.5-0078D4?logo=microsoftazure&logoColor=white)](https://azure.microsoft.com/en-us/products/kubernetes-service/)
 [![Terraform](https://img.shields.io/badge/IaC-Terraform-844FBA?logo=terraform&logoColor=white)](https://www.terraform.io/)
