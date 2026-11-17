@@ -14,7 +14,7 @@ resources:
 images:
 - name: portfolio-app
   newName: acrkubesentrydev.azurecr.io/portfolio-app
-  newTag: 9c386b25
+  newTag: 7a01e939
 
 replicas:
 - count: 1
